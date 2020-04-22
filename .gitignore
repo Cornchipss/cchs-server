@@ -102,3 +102,10 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Ignore temp files
+/uploads/
+/songs/
+
+# Contains secret stuff
+/secret/

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+
+        <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.16.3/grapes.min.js"></script>
+        <script src="http://danml.com/js/download2.js"></script>
+
+        <link rel="stylesheet" href="/css/styles.css">
+    </head>
+    <body>
+        <div id="gjs"></div>
+
+        <button onclick="save()">Save</button>
+
+        <script>
+            var editor = grapesjs.init(
+            {
+                container : '#gjs',
+                components: `<div class="txt-red">Hello world!</div> <div>jhi</div>`,
+                style: '.txt-red{color: red}',
+            });
+
+            function save()
+            {
+                download(`<style>${editor.getCss()}</style>\n<body>${editor.getHtml()}</body>`, 'page.html', 'text/html');
+            }
+        </script>
+    </body>
+</html>
