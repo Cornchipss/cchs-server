@@ -1,0 +1,27 @@
+{
+  "name": "cchs-server",
+  "version": "1.0.0",
+  "description": "A server for the CCHS byte club",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cornchipss/cchs-server.git"
+  },
+  "author": "Cornchip",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Cornchipss/cchs-server/issues"
+  },
+  "homepage": "https://github.com/Cornchipss/cchs-server#readme",
+  "dependencies": {
+    "adm-zip": "^0.4.14",
+    "bcrypt": "^4.0.1",
+    "express": "^4.17.1",
+    "multer": "^1.4.2",
+    "simple-youtube-api": "^5.2.1",
+    "youtube-mp3-downloader": "^0.6.7"
+  }
+}
