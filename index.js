@@ -36,7 +36,7 @@ new (require('./componenets/register-component'))(accountManager).init(app);
 
 new (require('./componenets/page-upload-component'))(categoryManager).init(app);
 
-new (require('./componenets/song-downloader'))().init(app);
+new (require('./componenets/song-component'))().init(app);
 
 app.get('/api', (req, res) =>
 {

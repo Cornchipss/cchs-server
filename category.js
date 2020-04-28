@@ -1,5 +1,7 @@
 const fs = require('fs');
 
+const Playlist = require('./playlist');
+
 module.exports = class
 {
     constructor(name, callback)
@@ -80,10 +82,15 @@ module.exports = class
                 }
                 else
                 {
-                    this._settings = {interval: 30000};
+                    this._settings = {interval: 30000, playlist: 'default', start: '00:00:00'};
                     this._name = name;
+                    
                     this._currentPage = 0;
                     this._nextPageTime = Date.now() + this._settings.interval;
+                    
+                    this._playlist = new Playlist('default');
+                    this._displayTime = {hour: 0, minute: 0, second: 0};
+                    
                     this.save();
                     if(callback)
                         callback(this);
@@ -164,4 +171,7 @@ module.exports = class
     get page() { return this.pages[this._currentPage]; }
     get settings() { return this._settings; }
     get pages() { return this._pages; }
+
+    get playlist() { return this._playlist; }
+    set playlist(p) { this._playlist = p; }
 }
