@@ -21,7 +21,8 @@ module.exports = class extends Component
             currentPage: this.categoryManager.category.page,
             nextCategoryTime: this.categoryManager.nextCategoryTime,
             categories: this.categoryManager.categories,
-            timings: this.categoryManager.timings
+            timings: this.categoryManager.timings,
+            playlist: this.categoryManager.category.playlist
         };
     
         res.status(200).type('json').send(JSON.stringify(payload));

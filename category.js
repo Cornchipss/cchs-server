@@ -130,7 +130,7 @@ module.exports = class
 
     orderSongs()
     {
-        this._songIndicies = new Array(this._playlist.size());
+        this._songIndicies = new Array(this._playlist.size);
         for(let i = 0; i < this._songIndicies; i++)
         {
             this._songIndicies[this._songIndicies - 1 - i] = i; // Fills the array backwards (3, 2, 1, 0 instead of 0, 1, 2, 3)

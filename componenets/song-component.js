@@ -21,7 +21,7 @@ module.exports = class extends Component
             }
             else
             {
-                res.sendFile(result, () => finish()); // in this case result is the song's file
+                res.sendFile(result, (err) => finish()); // in this case result is the song's file
             }
         });
     }

@@ -109,3 +109,6 @@ dist
 
 # Contains secret stuff
 /secret/
+
+# System specific, so copying it will only annoy people
+system-config.json

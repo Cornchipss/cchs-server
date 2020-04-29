@@ -5,12 +5,14 @@ const Zipper = require('adm-zip');
 const { youtubeApi } = require('./secret/credentials.json');
 const youtube = new (require('simple-youtube-api'))(youtubeApi);
 
+const {ffmpegPath} = require('./system-config.json');
+
 const SONGS_DIR = __dirname + '/songs';
 
 // https://www.npmjs.com/package/youtube-mp3-downloader
 const mp3Downloader = new (require('youtube-mp3-downloader'))(
     {
-        "ffmpegPath": "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+        "ffmpegPath": ffmpegPath,
         "outputPath": SONGS_DIR,
         "youtubeVideoQuality": "lowest", // This only affects video, not sound
         "queueParallelism": 2,
@@ -35,12 +37,11 @@ module.exports =
         {
             if(err)
             {
+                console.error(err);
                 callback(err, video); // In this case the "video" variable is an err code
                 return;
             }
 
-            let songPath = `${SONGS_DIR}/${video.title}.mp3`;
-            
             let existsZipped = false;
             let zipper = new Zipper(SONGS_DIR + '/songs.zip');
 
@@ -52,9 +53,9 @@ module.exports =
 
                     // Temp extracts it to send it, then deletes the extracted file
                     zipper.extractEntryTo(entry.name, SONGS_DIR, true, true);
-                    callback(undefined, songPath, () =>
+                    callback(undefined, SONGS_DIR + '/' + entry.name, () =>
                     {
-                        fs.unlink(songPath, () => {});
+                        fs.unlink(SONGS_DIR + '/' + entry.name, () => {});
                     });
                     return;
                 }
@@ -122,7 +123,12 @@ module.exports =
             else
             {
                 let video = videos[vidIndex];
-                let title = video.title.split('|').join('-'); // The '|' character likes to break ffmpeg, so I replace it with a '-' instead
+                let title = video.title;
+                
+                title = title.split('&#39;').join('\''); // ' gets renamed to '&#39;', so I go ahead and fix it.
+                // Replaces all characters that may break file names w/ substitues
+                title = title.split(':').join('-').split('"').join('\'').split('/').join('-').split('\\').join('-').split('[').join('(').split(']').join(')').split(';').join('.').split('|').join('-').split(',').join(' ');
+
                 video.title = title; // prob not the best to set this, but it makes my life way easier
                 callback(undefined, video);
                 return;
@@ -175,7 +181,7 @@ mp3Downloader.on('finished', (err, data) =>
 
     if(err)
     {
-        console.log(err);
+        console.error(err);
         if(current.callback)
             current.callback("Sorry, but the server encountered an error parsing this song :(");
     }
