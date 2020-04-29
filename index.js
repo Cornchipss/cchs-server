@@ -4,6 +4,8 @@ const express = require('express');
 const CategoryManager = require('./category-manager');
 const AccountManager = require('./account-manager');
 
+const handleCommand = require('./command-handler');
+
 const app = express();
 
 // Makes express able to understand data given to it from HTML forms
@@ -19,6 +21,13 @@ setInterval(() =>
 {
     categoryManager.updateCategories();
 }, 100);
+
+// For the command line interface
+const readline = require('readline').createInterface(
+{
+    input: process.stdin,
+    output: process.stdout
+});
 
 // dbg
 app.get('/admin', (req, res, next) =>
@@ -52,4 +61,20 @@ app.use((req, res, next) =>
     res.status(404).sendFile(__dirname + '/public/404.html');
 });
 
-app.listen(port, () => console.log('Listening on port ' + port));
+app.listen(port, () => 
+{
+    console.log('Listening on port ' + port);
+    (function()
+    {
+        readline.question('> ', (res) =>
+        {
+            if(handleCommand(res))
+                arguments.callee(); // recalls this anonymous function
+            else
+            {
+                console.log('Exiting...');
+                process.exit(0);
+            }
+        });
+    })();
+});

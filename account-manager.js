@@ -1,5 +1,6 @@
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+
 const fs = require('fs');
 
 const SALT_ROUNDS = 10;
