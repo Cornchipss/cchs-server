@@ -4,7 +4,7 @@ const express = require('express');
 const CategoryManager = require('./category-manager');
 const AccountManager = require('./account-manager');
 
-const handleCommand = require('./command-handler');
+const cmdHandler = require('./command-handler');
 
 const app = express();
 
@@ -68,7 +68,7 @@ app.listen(port, () =>
     {
         readline.question('> ', (res) =>
         {
-            if(handleCommand(res))
+            if(cmdHandler.handleInput(res))
                 arguments.callee(); // recalls this anonymous function
             else
             {

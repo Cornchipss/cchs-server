@@ -1,5 +1,6 @@
 {
     "interval":30000,
-    "start":"14:00:00",
-    "playlist": "default"
+    "showTime":"14:00:00",
+    "playlist": "default",
+    "mode": "shuffle"
 }
