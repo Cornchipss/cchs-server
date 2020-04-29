@@ -18,7 +18,7 @@
   "homepage": "https://github.com/Cornchipss/cchs-server#readme",
   "dependencies": {
     "adm-zip": "^0.4.14",
-    "bcrypt": "^4.0.1",
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "multer": "^1.4.2",
     "simple-youtube-api": "^5.2.1",

@@ -1,4 +1,4 @@
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
 const fs = require('fs');
@@ -49,10 +49,10 @@ module.exports = class
             return;
         }
 
-        if(username.length < 4 || username.length > 30)
+        if(username.length < 4 || username.length >= 30)
         {
             if(callback)
-                callback(undefined, 'The username must be over 5 characters and under 30 characters');
+                callback(undefined, 'The username must be over 3 characters and under 30 characters');
             return;
         }
 
@@ -81,13 +81,14 @@ module.exports = class
                     this._data.users[username] = {};
 
                     this._data.users[username].password = hash;
-                    this._save();
 
                     this._generateToken((token) =>
                     {
                         this._data.users[username].token = token;
                         this._data.users[username]['token-expires'] = Date.now() + TOKEN_LIFETIME;
                         this._data.tokens[token] = username;
+
+                        this._save();
                         callback(token);
                     });
                 });
