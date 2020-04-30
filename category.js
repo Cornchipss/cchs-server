@@ -27,22 +27,6 @@ module.exports = class
         this._nextPageTime = Date.now() + this._settings.interval;
     }
 
-    nextSong()
-    {
-        let i = _songIndicies.pop();
-        if(this._songIndicies.length === 0)
-        {
-            this.orderSongs();
-        }
-        this._playlist.getSong(i, (err, song, finish) =>
-        {
-            if(err)
-            {
-                console.log(err);
-            }
-        }, this._songIndicies[this._songIndicies.length - 1]);
-    }
-
     /**
      * Checks if it should advance to the next page, and does so if it should
      */
@@ -94,16 +78,14 @@ module.exports = class
 
                         this._playlist = new Playlist(this._settings.playlist);
                         let showtimeSplit = this._settings.showTime.split(':');
-                        this._displayTime = 
+                        this._showTime = 
                         {
                             hour: Number(showtimeSplit[0]),
                             minute: Number(showtimeSplit[1]),
                             second: Number(showtimeSplit[2])
                         };
 
-                        this._mode = this._settings.mode;
-
-                        this.orderSongs();
+                        this._playlistMode = this._settings.mode;
 
                         if(callback)
                             callback(this);
@@ -118,7 +100,7 @@ module.exports = class
                     this._nextPageTime = Date.now() + this._settings.interval;
                     
                     this._playlist = new Playlist('default');
-                    this._displayTime = {hour: 0, minute: 0, second: 0};
+                    this._showTime = {hour: 0, minute: 0, second: 0};
                     
                     this.save();
                     if(callback)
@@ -126,27 +108,6 @@ module.exports = class
                 }
             });
         });
-    }
-
-    orderSongs()
-    {
-        this._songIndicies = new Array(this._playlist.size);
-        for(let i = 0; i < this._songIndicies; i++)
-        {
-            this._songIndicies[this._songIndicies - 1 - i] = i; // Fills the array backwards (3, 2, 1, 0 instead of 0, 1, 2, 3)
-            // Its filled backwards so I can remove the last element to get the next song, which is way more efficient than removing the first element
-        }
-
-        if(this._mode === 'shuffle')
-        {
-            for(let i = 0; i < this._songIndicies; i++)
-            {
-                let temp = this._songIndicies[i];
-                let randomIndex = Math.floor(Math.random() * this._songIndicies.length);
-                this._songIndicies[i] = this._songIndicies[randomIndex];
-                this._songIndicies[randomIndex] = temp;
-            }
-        }
     }
 
     addPage(name, file, order, callback)
@@ -224,4 +185,17 @@ module.exports = class
 
     get playlist() { return this._playlist; }
     set playlist(p) { this._playlist = p; }
+
+    get requestData()
+    {
+        return {
+            name: this.name,
+            pages: this.pages,
+            currentPage: this._currentPage,
+            nextPageTime: this._nextPageTime,
+            playlist: this._playlist.name,
+            playlistMode: this._playlistMode,
+            showTime: this._showTime
+        }
+    }
 }

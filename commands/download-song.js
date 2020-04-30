@@ -46,7 +46,7 @@ module.exports =
 
     description: () =>
     {
-        return 'A test command that says "pong"';
+        return 'Caches the given song';
     },
 
     arguments: () =>

@@ -82,6 +82,15 @@ module.exports = class
     }
 
     get categories() { return this._categories; }
+    get categoriesData()
+    {
+        let data = new Array(this._categories.length);
+        for(let i = 0; i < data.length; i++)
+        {
+            data[i] = this._categories[i].requestData;
+        }
+        return data;
+    }
 
     get category() { return this._categories[this.currentCategoryIndex]; }
     get currentCategoryIndex() { return this._currentCategory; }

@@ -18,11 +18,9 @@ module.exports = class extends Component
         let payload = 
         {
             currentCategory: this.categoryManager.currentCategoryIndex,
-            currentPage: this.categoryManager.category.page,
             nextCategoryTime: this.categoryManager.nextCategoryTime,
-            categories: this.categoryManager.categories,
-            timings: this.categoryManager.timings,
-            playlist: this.categoryManager.category.playlist
+            categories: this.categoryManager.categoriesData,
+            playlists: this.categoryManager.category.playlist
         };
     
         res.status(200).type('json').send(JSON.stringify(payload));

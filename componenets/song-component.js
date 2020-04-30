@@ -7,11 +7,12 @@ module.exports = class extends Component
     init(app)
     {
         app.post('/api/song', (req, res, next) => this.action(req, res, next));
+        app.get('/api/song', (req, res, next) => this.action(req, res, next));
     }
 
     action(req, res, next)
     {
-        let name = req.body['name'];
+        let name = req.body['name'] || req.query['name'];
 
         SongHandler.getSong(5, name, (err, result, finish) =>
         {
