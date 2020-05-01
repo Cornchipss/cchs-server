@@ -78,7 +78,7 @@ window.addEventListener('DOMContentLoaded', () =>
                     let ctx = new AudioContext();
 console.log(song
     );
-                    fetch('/api/song?name=' + song)
+                    fetch('/api/song?id=' + song)
                         .then(data => data.arrayBuffer())
                         .then(buffer => ctx.decodeAudioData(buffer))
                         .then(audioData =>

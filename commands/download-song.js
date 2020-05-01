@@ -32,10 +32,6 @@ module.exports =
                     });
                 }
             });
-            SongHandler.getSong(5, songName, (err, vid) =>
-            {
-
-            });
         }
         else
         {

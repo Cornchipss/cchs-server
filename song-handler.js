@@ -1,4 +1,3 @@
-
 const fs = require('fs');
 
 const { youtubeApi } = require('./secret/credentials.json');
@@ -49,30 +48,41 @@ module.exports =
                         return;
                     }
 
-                    let existsZipped = false;
+                    module.exports.getSongId(id, callback);
+                });
+            }
+        });
+    },
 
-                    zipper.getEntries().forEach(entry =>
-                    {
-                        // If this is true, the file was already downloaded.
-                        if(entry.name === video.title + '.mp3')
-                        {
-                            existsZipped = true;
+    getSongId: (id, callback) =>
+    {
+        module.exports.songExistsId(id, (exists) =>
+        {
+            if(exists)
+                callback(undefined, exists);
+            else
+            {
+                youtube.getVideoByID(id).then(video =>
+                {
+                    module.exports.downloadSong(id, video.title, callback);
+                });
+            }
+        });
+    },
 
-                            // DBG to find any needless API uses
-                            console.log('ALERT - A song was neadlessly searched on youtube, when it already existed on the server.  Name proveded: ' + name + '; File name: ' + entry.name);
-
-                            // Temp extracts it to send it, then deletes the extracted file
-                            zipper.extractEntryTo(entry.name, SONGS_DIR, true, true);
-                            callback(undefined, SONGS_DIR + '/' + entry.name, () =>
-                            {
-                                fs.unlink(SONGS_DIR + '/' + entry.name, () => {});
-                            });
-                            return;
-                        }
-                    });
-                
-                    if(!existsZipped)
-                        module.exports.downloadSong(video.id, video.title, callback);
+    getSongInfo: (id, callback) =>
+    {
+        fs.readFile(SONGS_DIR + id + '/details.json', {encoding: 'utf8'}, (err, res) =>
+        {
+            if(err)
+            {
+                callback('Song with an ID of ' + id + ' was not found.', 400);
+            }
+            else
+            {
+                res.json().then(json =>
+                {
+                    callback(undefined, json);
                 });
             }
         });
@@ -119,10 +129,13 @@ module.exports =
             // Selects the first video that's under the MAX_SONG_DURATION
             for(vidIndex = 0; vidIndex < vids; vidIndex++)
             {
-                let vid = await youtube.getVideoByID(videos[vidIndex].id);
-                if(vid.durationSeconds < MAX_SONG_DURATION)
+                if(videos[vidIndex])
                 {
-                    break;
+                    let vid = await youtube.getVideoByID(videos[vidIndex].id);
+                    if(vid.durationSeconds < MAX_SONG_DURATION)
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -138,8 +151,6 @@ module.exports =
                 let title = video.title;
                 
                 title = title.split('&#39;').join('\''); // ' gets renamed to '&#39;', so I go ahead and fix it.
-                // Replaces all characters that may break file names w/ substitues
-                title = title.split(':').join('-').split('"').join('\'').split('/').join('-').split('\\').join('-').split('[').join('(').split(']').join(')').split(';').join('.').split('|').join('-').split(',').join(' ');
 
                 video.title = title; // prob not the best to set this, but it makes my life way easier
                 callback(undefined, video);
@@ -147,8 +158,21 @@ module.exports =
             }
         }).catch(err =>
         {
-            console.log(err);
+            console.error(err);
             callback(err, 500);
+        });
+    },
+
+    songExistsId: (id, callback) =>
+    {
+        fs.stat(SONGS_DIR + id + '/song.mp3', err =>
+        {
+            if(!err)
+                callback(SONGS_DIR + id + '/song.mp3');
+            else
+            {
+                callback(undefined);
+            }
         });
     },
 
@@ -161,59 +185,24 @@ module.exports =
     {
         let found = false;
 
-        fs.readdir(SONGS_DIR, (err, files) =>
+        const dirs = fs.readdirSync(SONGS_DIR).filter(f => fs.statSync(SONGS_DIR + '/' + f).isDirectory());
+
+        dirs.forEach(dir =>
         {
-            if(err)
-                throw err;
-
-            let filesChecked = 0;
-
-            if(files.length === 0)
-                callback(undefined);
-
-            files.forEach(file =>
+            if(fs.existsSync(dir + '/details.json'))
             {
-                if(found)
-                    return;
-                
-                fs.stat(file, (err, stats) =>
+                let data = fs.readFileSync(dir + '/details.json', {encoding: 'utf8'})
+                if(JSON.parse(data).name === name)
                 {
-                    if(err)
-                        throw err;
-                    if(found)
-                        return;
-                    
-                    if(stats.isDirectory())
-                    {
-                        if(found)
-                            return;
-                        
-                        fs.readFile(file + '/data.json', {encoding: 'utf8'}, (err, res) =>
-                        {
-                            if(found)
-                                return;
-
-                            res.json().then(json =>
-                            {
-                                if(found)
-                                    return;
-
-                                if(json.name === name)
-                                {
-                                    callback(file + '/song.mp3');
-                                    found = true;
-                                }
-
-                                filesChecked++;
-
-                                if(!found && filesChecked === files.length)
-                                    callback(undefined);
-                            });
-                        });
-                    }
-                });
-            });
+                    callback(dir + '/song.mp3');
+                    found = true;
+                    return;
+                }
+            }
         });
+
+        if(!found)
+            callback(undefined);
     }
 }
 
@@ -228,8 +217,11 @@ function handleQue()
     if(que.length === 0)
         return; // We're done processing :)
 
-    fs.mkdirSync(SONGS_DIR + que[0].id);
-    mp3Downloader.download(que[0].id, `${SONGS_DIR}${que[0].id}/song.mp3`);
+    let dir = `${SONGS_DIR}${que[0].id}/`;
+
+    if(!fs.existsSync(dir))
+        fs.mkdirSync(dir);
+    mp3Downloader.download(que[0].id, que[0].id + '.mp3');
 }
 
 mp3Downloader.on('finished', (err, data) =>
@@ -244,9 +236,16 @@ mp3Downloader.on('finished', (err, data) =>
     }
     else
     {
-        console.log(data.file);
-        if(current.callback)
-            current.callback(undefined, data.file);
+        let newDir = SONGS_DIR + '/' + current.id + '/';
+        let newFile = newDir + 'song.mp3';
+        fs.rename(data.file, newFile, () =>
+        {
+            fs.writeFile(newDir + 'details.json', JSON.stringify({name: current.title}), () =>
+            {
+                if(current.callback)
+                    current.callback(undefined, newFile);
+            });
+        });
     }
 
     module.exports._que.splice(0, 1); // removes the one we just did
@@ -257,7 +256,7 @@ mp3Downloader.on('error', (err) =>
 {
     let current = module.exports._que[0];
 
-    console.log(err);
+    console.error(err);
     current.callback("Sorry, but the server encountered an error parsing this song :(", 500);
     module.exports._que.splice(0, 1); // removes the one we just did
     handleQue();
