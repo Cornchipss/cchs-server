@@ -1,5 +1,11 @@
 window.addEventListener('DOMContentLoaded', () =>
-{    
+{
+    const SONG_NOTIFICATION_TIME = 5; // in seconds
+    const SONG_FADE_TIME = 2; // in seconds
+
+    let paragraph = document.getElementById('music-title');
+    paragraph.style.transition = 'opacity ' + SONG_FADE_TIME + 's';
+
     let songOrder = [];
     let prevCategory;
 
@@ -26,6 +32,17 @@ window.addEventListener('DOMContentLoaded', () =>
     let firstRun = true;
 
     let songs;
+    let playlistMode;
+
+    function nextSong()
+    {
+        if(songOrder.length === 0)
+        {
+            reorderSongs(songs.length, playlistMode);
+        }
+
+        return songs[songOrder.pop()];
+    }
 
     (function getLiveInfo()
     {
@@ -46,39 +63,45 @@ window.addEventListener('DOMContentLoaded', () =>
 
                 // Different category = new playlist
                 songs = res.playlist.songs;
-                reorderSongs(songs.length, res.currentCategory.playlistMode);
+                playlistMode = res.currentCategory.playlistMode;
+                reorderSongs(songs.length, playlistMode);
             }
-
+            
             if(firstRun)
             {
                 firstRun = false;
-                let song = songs[songOrder.pop()];
                 
                 function songPlayer()
                 {
-                    let ctx = new AudioContext();
+                    let song = nextSong();
 
+                    let ctx = new AudioContext();
+console.log(song
+    );
                     fetch('/api/song?name=' + song)
                         .then(data => data.arrayBuffer())
                         .then(buffer => ctx.decodeAudioData(buffer))
                         .then(audioData =>
                         {
+                            paragraph.innerHTML = song;
+                            paragraph.style.opacity = 1;
+                            setTimeout(() =>
+                            {
+                                paragraph.style.opacity = 0;
+                            }, SONG_FADE_TIME * 1000 + SONG_NOTIFICATION_TIME * 1000);
+
                             let playsound = ctx.createBufferSource();
                             playsound.buffer = audioData;
                             playsound.connect(ctx.destination);
                             playsound.start(ctx.currentTime);
                             playsound.addEventListener('ended', (e) =>
                             {
-                                console.log('game over.');
                                 playsound.disconnect();
+                                ctx.close();
+
+                                songPlayer();
                             });
                         });
-                    // let audio = new Audio('/api/song?name=' + song);
-                    // audio.addEventListener('loadeddata', (e) =>
-                    // {
-                    //     console.log(e);
-                    // });
-                    // audio.play();
                 }
 
                 songPlayer();

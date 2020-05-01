@@ -1,6 +1,6 @@
 {
     "interval":30000,
     "showTime":"14:00:00",
-    "playlist": "default",
+    "playlist": "jojo",
     "mode": "shuffle"
 }

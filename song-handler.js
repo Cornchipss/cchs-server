@@ -1,13 +1,12 @@
 
 const fs = require('fs');
-const Zipper = require('adm-zip');
 
 const { youtubeApi } = require('./secret/credentials.json');
 const youtube = new (require('simple-youtube-api'))(youtubeApi);
 
 const {ffmpegPath} = require('./system-config.json');
 
-const SONGS_DIR = __dirname + '/songs';
+const SONGS_DIR = __dirname + '/songs/';
 
 // https://www.npmjs.com/package/youtube-mp3-downloader
 const mp3Downloader = new (require('youtube-mp3-downloader'))(
@@ -29,41 +28,54 @@ module.exports =
     /**
      * @param vids {number} The amount of videos to search through
      * @param name {string} The name of the video (performs a youtube search to find actual name using this)
-     * @param callback {Function} (error?, songpath, finish?) Called when this gets the song, or throws an error - If it successfully gets a song, make sure to call finish() to delete any excess files after using the song's uncompressed file.
+     * @param callback {Function} (error?, songpath) Called when this gets the song, or throws an error
      */
     getSong: (vids, name, callback) =>
     {
-        module.exports.getVideoByName(name, vids, (err, video) =>
+        module.exports.songExists(name, (exists) => 
         {
-            if(err)
+            if(exists)
             {
-                console.error(err);
-                callback(err, video); // In this case the "video" variable is an err code
-                return;
+                callback(undefined, exists)
             }
-
-            let existsZipped = false;
-            let zipper = new Zipper(SONGS_DIR + '/songs.zip');
-
-            zipper.getEntries().forEach(entry =>
+            else
             {
-                if(entry.name === video.title + '.mp3')
+                module.exports.getVideoByName(name, vids, (err, video) =>
                 {
-                    existsZipped = true;
-
-                    // Temp extracts it to send it, then deletes the extracted file
-                    zipper.extractEntryTo(entry.name, SONGS_DIR, true, true);
-                    callback(undefined, SONGS_DIR + '/' + entry.name, () =>
+                    if(err)
                     {
-                        fs.unlink(SONGS_DIR + '/' + entry.name, () => {});
+                        console.error(err);
+                        callback(err, video); // In this case the "video" variable is an err code
+                        return;
+                    }
+
+                    let existsZipped = false;
+
+                    zipper.getEntries().forEach(entry =>
+                    {
+                        // If this is true, the file was already downloaded.
+                        if(entry.name === video.title + '.mp3')
+                        {
+                            existsZipped = true;
+
+                            // DBG to find any needless API uses
+                            console.log('ALERT - A song was neadlessly searched on youtube, when it already existed on the server.  Name proveded: ' + name + '; File name: ' + entry.name);
+
+                            // Temp extracts it to send it, then deletes the extracted file
+                            zipper.extractEntryTo(entry.name, SONGS_DIR, true, true);
+                            callback(undefined, SONGS_DIR + '/' + entry.name, () =>
+                            {
+                                fs.unlink(SONGS_DIR + '/' + entry.name, () => {});
+                            });
+                            return;
+                        }
                     });
-                    return;
-                }
-            });
-            
-            if(!existsZipped)
-                module.exports.downloadSong(video.id, video.title, callback);
-        });        
+                
+                    if(!existsZipped)
+                        module.exports.downloadSong(video.id, video.title, callback);
+                });
+            }
+        });
     },
 
     // The Youtube to Mp3 library can only handle one song at a time or it breaks, a que is used to prevent breakage
@@ -73,7 +85,7 @@ module.exports =
      * Downloads a song even if it already exists - will overwrite something that does exist
      * @param id {string} Base64 ID of the youtube video
      * @param title {string} Title to save the video under - should be the same as returned by the getVideoByName function
-     * @param callback {Function} (error?, file, finish?) Called once the song has been downloaded - If no error is present call finish once you are done using the downloaded file.
+     * @param callback {Function} (error?, file) Called once the song has been downloaded
      */
     downloadSong: (id, title, callback) =>
     {
@@ -143,21 +155,65 @@ module.exports =
     /**
      * Checks if a song with a given name exists
      * @param name {string} The song's actual name - not user friendly one
-     * @param callback {Function} (exists) - If the song does exist
+     * @param callback {Function} (exists) - The path to the song if it exists, otherwise undefined
      */
     songExists: (name, callback) =>
     {
         let found = false;
-        let zipper = new Zipper(SONGS_DIR + '/songs.zip');
-        zipper.getEntries().forEach(entry =>
+
+        fs.readdir(SONGS_DIR, (err, files) =>
         {
-            if(entry.name === name + '.mp3')
+            if(err)
+                throw err;
+
+            let filesChecked = 0;
+
+            if(files.length === 0)
+                callback(undefined);
+
+            files.forEach(file =>
             {
-                found = true;
-                return;
-            }
+                if(found)
+                    return;
+                
+                fs.stat(file, (err, stats) =>
+                {
+                    if(err)
+                        throw err;
+                    if(found)
+                        return;
+                    
+                    if(stats.isDirectory())
+                    {
+                        if(found)
+                            return;
+                        
+                        fs.readFile(file + '/data.json', {encoding: 'utf8'}, (err, res) =>
+                        {
+                            if(found)
+                                return;
+
+                            res.json().then(json =>
+                            {
+                                if(found)
+                                    return;
+
+                                if(json.name === name)
+                                {
+                                    callback(file + '/song.mp3');
+                                    found = true;
+                                }
+
+                                filesChecked++;
+
+                                if(!found && filesChecked === files.length)
+                                    callback(undefined);
+                            });
+                        });
+                    }
+                });
+            });
         });
-        callback(found);
     }
 }
 
@@ -172,7 +228,8 @@ function handleQue()
     if(que.length === 0)
         return; // We're done processing :)
 
-    mp3Downloader.download(que[0].id, que[0].title + '.mp3');
+    fs.mkdirSync(SONGS_DIR + que[0].id);
+    mp3Downloader.download(que[0].id, `${SONGS_DIR}${que[0].id}/song.mp3`);
 }
 
 mp3Downloader.on('finished', (err, data) =>
@@ -187,23 +244,9 @@ mp3Downloader.on('finished', (err, data) =>
     }
     else
     {
-        function localCopy()
-        {
-            // Creates a local copy of this song so we don't have to download it again
-            let zipper = new Zipper(SONGS_DIR + '/songs.zip');
-            zipper.addLocalFile(data.file);
-            zipper.writeZip();
-
-            fs.unlink(data.file, () => {});
-        }
-
+        console.log(data.file);
         if(current.callback)
-            current.callback(undefined, data.file, () =>
-            {
-                localCopy();
-            });
-        else
-            localCopy();
+            current.callback(undefined, data.file);
     }
 
     module.exports._que.splice(0, 1); // removes the one we just did

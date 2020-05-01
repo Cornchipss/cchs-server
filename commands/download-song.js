@@ -23,10 +23,10 @@ module.exports =
                         else
                         {
                             console.log('Downloading ' + video.title + '...');
-                            SongHandler.downloadSong(video.id, video.title, (err, fname, finish) =>
+                            SongHandler.downloadSong(video.id, video.title, (err, fname) =>
                             {
-                                console.log('Song downloaded!');
-                                finish();
+                                if(!err)
+                                    console.log('Song downloaded!');
                             });
                         }
                     });
