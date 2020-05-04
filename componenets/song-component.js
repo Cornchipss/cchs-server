@@ -20,7 +20,7 @@ module.exports = class extends Component
         {
             if(err)
             {
-                res.status(result).send(err); // in this case result is the error code
+                res.status(result).type('json').send(JSON.stringify(err)); // in this case result is the error code
             }
             else
             {

@@ -5,7 +5,7 @@ const youtube = new (require('simple-youtube-api'))(youtubeApi);
 
 const {ffmpegPath} = require('./system-config.json');
 
-const SONGS_DIR = __dirname + '/songs/';
+const SONGS_DIR = __dirname + '\\songs\\';
 
 // https://www.npmjs.com/package/youtube-mp3-downloader
 const mp3Downloader = new (require('youtube-mp3-downloader'))(
@@ -72,18 +72,22 @@ module.exports =
 
     getSongInfo: (id, callback) =>
     {
-        fs.readFile(SONGS_DIR + id + '/details.json', {encoding: 'utf8'}, (err, res) =>
+        fs.readFile(SONGS_DIR + id + '\\details.json', {encoding: 'utf8'}, (err, res) =>
         {
             if(err)
             {
-                callback('Song with an ID of ' + id + ' was not found.', 400);
+                youtube.getVideoByID(id).then(video =>
+                {
+                    callback(undefined, {name: video.title});
+                }).catch(err =>
+                {
+                    console.log(new Error(err));
+                    callback('Song with an ID of ' + id + ' was not found.', 400);
+                });
             }
             else
             {
-                res.json().then(json =>
-                {
-                    callback(undefined, json);
-                });
+                callback(undefined, JSON.parse(res));
             }
         });
     },
@@ -217,10 +221,24 @@ function handleQue()
     if(que.length === 0)
         return; // We're done processing :)
 
+    let callbacks = [que[0].callback];
+
+    for(let i = 1; i < que.length; i++)
+    {
+        // Removes any duplicate downloads, but keep their callbacks
+        if(que[i].id === que[0].id)
+        {
+            callbacks.push(que.splice(i, 1)[0].callback);
+        }
+    }
+
+    que[0].callback = callbacks;
+
     let dir = `${SONGS_DIR}${que[0].id}/`;
 
     if(!fs.existsSync(dir))
         fs.mkdirSync(dir);
+    
     mp3Downloader.download(que[0].id, que[0].id + '.mp3');
 }
 
@@ -231,8 +249,11 @@ mp3Downloader.on('finished', (err, data) =>
     if(err)
     {
         console.error(err);
-        if(current.callback)
-            current.callback("Sorry, but the server encountered an error parsing this song :(");
+        current.callback.forEach(callback =>
+        {
+            if(callback)
+                callback("Sorry, but the server encountered an error parsing this song :(");
+        });
     }
     else
     {
@@ -242,8 +263,11 @@ mp3Downloader.on('finished', (err, data) =>
         {
             fs.writeFile(newDir + 'details.json', JSON.stringify({name: current.title}), () =>
             {
-                if(current.callback)
-                    current.callback(undefined, newFile);
+                current.callback.forEach(callback =>
+                {
+                    if(callback)
+                        callback(undefined, newFile);
+                });
             });
         });
     }

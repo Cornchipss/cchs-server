@@ -9,6 +9,8 @@ window.addEventListener('DOMContentLoaded', () =>
     let songOrder = [];
     let prevCategory;
 
+    let nextBuffer;
+
     function reorderSongs(len, mode)
     {
         songOrder = new Array(len);
@@ -71,25 +73,41 @@ window.addEventListener('DOMContentLoaded', () =>
             {
                 firstRun = false;
                 
-                function songPlayer()
+                function songPlayer(buffer)
                 {
                     let song = nextSong();
 
                     let ctx = new AudioContext();
-console.log(song
-    );
+                    console.log(song);
+
+                    let songNameFinished = false;
+                    let songDownloadFinished = false;
+
+                    let songName;
+                    
+                    fetch('/api/songinfo?id=' + song)
+                        .then(data => data.json())
+                        .then((json) =>
+                        {
+                            songName = json.name;
+                            songNameFinished = true;
+
+                            if(songDownloadFinished)
+                            {
+                                paragraph.innerHTML = songName;
+                                paragraph.style.opacity = 1;
+                                setTimeout(() =>
+                                {
+                                    paragraph.style.opacity = 0;
+                                }, SONG_FADE_TIME * 1000 + SONG_NOTIFICATION_TIME * 1000);    
+                            }
+                        });
+
                     fetch('/api/song?id=' + song)
                         .then(data => data.arrayBuffer())
                         .then(buffer => ctx.decodeAudioData(buffer))
                         .then(audioData =>
                         {
-                            paragraph.innerHTML = song;
-                            paragraph.style.opacity = 1;
-                            setTimeout(() =>
-                            {
-                                paragraph.style.opacity = 0;
-                            }, SONG_FADE_TIME * 1000 + SONG_NOTIFICATION_TIME * 1000);
-
                             let playsound = ctx.createBufferSource();
                             playsound.buffer = audioData;
                             playsound.connect(ctx.destination);
@@ -101,6 +119,18 @@ console.log(song
 
                                 songPlayer();
                             });
+
+                            songDownloadFinished = true;
+
+                            if(songNameFinished)
+                            {
+                                paragraph.innerHTML = songName;
+                                paragraph.style.opacity = 1;
+                                setTimeout(() =>
+                                {
+                                    paragraph.style.opacity = 0;
+                                }, SONG_FADE_TIME * 1000 + SONG_NOTIFICATION_TIME * 1000);    
+                            }
                         });
                 }
 
