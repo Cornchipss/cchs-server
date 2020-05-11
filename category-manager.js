@@ -15,8 +15,6 @@ module.exports = class
      */
     updateCategories()
     {
-        if(Date.now() >= this.nextCategoryTime)
-        {
         if(this.category)
         {
             if(Date.now() >= this.nextCategoryTime)
