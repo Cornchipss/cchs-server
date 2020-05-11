@@ -60,11 +60,11 @@ module.exports =
             return true;
         }
     },
-
+    
     COMMANDS:
     {
-        ping: require('./commands/ping'),
-        stop: require('./commands/stop'),
+        "ping": require('./commands/ping'),
+        "stop": require('./commands/stop'),
         "download-song": require('./commands/download-song')
     }
 }

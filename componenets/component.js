@@ -18,4 +18,22 @@ module.exports = class
      * @param {Function} next Advances express to the next receiver of this request
      */
     action(req, res, next) {}
+
+
+    // TODO VVV Implement this stuff
+    /**
+     * The maximum requests someone can make before it blocks them
+     */
+    maxRequests()
+    {
+        return Infinity;
+    }
+    
+    /**
+     * The time to block said user from making requests once reached a certain amount
+     */
+    blockTime()
+    {
+        return 1000 * 60 * 5; // 5 mins default
+    }
 }

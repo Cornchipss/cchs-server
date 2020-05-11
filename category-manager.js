@@ -17,21 +17,28 @@ module.exports = class
     {
         if(Date.now() >= this.nextCategoryTime)
         {
-            this.nextCategory();
-        }
-
         if(this.category)
         {
+            if(Date.now() >= this.nextCategoryTime)
+            {
+                this.nextCategory();
+            }
+
             this.category.update();
         }
     }
 
-    /**
-     * Advances the category
-     */
     nextCategory()
     {
-        throw new Error('foo');
+        if(this.order[this._orderIndex.day].length === 0)
+            return; // there are no categories
+
+        this._orderIndex.index++;
+        while(this._orderIndex.index === this.order[this._orderIndex.day].length)
+        {
+            this._orderIndex.index = 0;
+            this._orderIndex.day = (this._orderIndex.day + 1) % 7;
+        }
     }
 
     categoryExists(name)
@@ -59,7 +66,7 @@ module.exports = class
         return cat;
     }
 
-    // A jank way of representing these easily for comparisons
+    // A nice way of representing these easily for comparisons
     _encodeTime(time)
     {
         return time[2] + 100 * (time[1] + 100 * (time[0]));
@@ -67,6 +74,8 @@ module.exports = class
 
     addCategory(cat)
     {
+        this._categories.push(cat);
+
         for(let day = 0; day < 7; day++)
         {
             let times = [];
@@ -151,7 +160,7 @@ module.exports = class
         
         // Makes sure the program doesnt get stuck in an infinite while loop if there are no categories to display
         let iterations = 0;
-        while(this.order[day].length === i && iterations <= 7)
+        while(this.order[day].length === i && iterations <= 7) // <= 7 because if no categories were found for any other day, I want to loop back around to the current day and select from there
         {
             day++;
             i = 0;
@@ -164,7 +173,7 @@ module.exports = class
         let timeToShow = this.order[day][i].time;
 
         let show = new Date();
-        show.setDate(show.getDate() + iterations - 1);
+        show.setDate(show.getDate() + iterations);
         show.setHours(timeToShow[0], timeToShow[1], timeToShow[2], 0);
         return show;
     }
@@ -247,7 +256,7 @@ module.exports = class
 
                                     if(!this._orderIndex)
                                     {
-                                        for(let dDay = -1; dDay >= -7; dDay--)
+                                        for(let dDay = -1; dDay >= -7; dDay--) // >= -7 because if no categories are in any other day I want to loop back to the today and select from there
                                         {
                                             let day = dDay + today;
                                             if(day < 0)

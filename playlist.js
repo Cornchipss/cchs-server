@@ -1,13 +1,5 @@
-const fs = require('fs');
-
 const SongHandler = require('./song-handler');
-
-const FOLDER = __dirname + '/playlists/';
-
-if(!fs.existsSync(FOLDER))
-{
-    fs.mkdirSync(FOLDER);
-}
+const PlaylistManager = require('./playlist-manager');
 
 module.exports = class
 {
@@ -20,15 +12,7 @@ module.exports = class
         this.name = name;
         this.songs = [];
 
-        if(fs.existsSync(FOLDER + name + '.json'))
-        {
-            fs.readFile(FOLDER + name + '.json', {encoding: 'utf-8'}, (err, res) =>
-            {
-                if(err) 
-                    throw err;
-                this.songs = JSON.parse(res);
-            });
-        }
+        this.songs = PlaylistManager.playlists[name];
     }
 
     /**
@@ -37,10 +21,7 @@ module.exports = class
      */
     save(callback)
     {
-        fs.writeFile(
-            JSON.stringify(this.songs), 
-            FOLDER + this.name + '.json', 
-            () => { if(callback) callback(); });
+        PlaylistManager.save(this.name, this.songs, callback);
     }
 
     /**

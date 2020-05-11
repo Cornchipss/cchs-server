@@ -24,7 +24,7 @@ module.exports = class
     nextPage()
     {
         this._currentPage = (this._currentPage + 1) % this.pages.length;
-        this._nextPageTime = Date.now() + this.interval;
+        this.resetClock();
     }
 
     /**
@@ -74,7 +74,8 @@ module.exports = class
                         this._name = name;
 
                         this._currentPage = 0;
-                        this._nextPageTime = Date.now() + settings.interval;
+                        this.interval = settings.interval;
+                        this.resetClock();
 
                         this._playlist = new Playlist(settings.playlist);
                         this._showTime = settings.showTime;
