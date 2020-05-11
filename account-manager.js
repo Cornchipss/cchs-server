@@ -174,6 +174,14 @@ module.exports = class
         }
     }
 
+    isRequestLoggedIn(req, callback)
+    {
+        this.loginToken(req.params['token'], (found) =>
+        {
+            callback(!!found); // !! converts it to a boolean
+        });
+    }
+    
     _generateToken(callback)
     {
         crypto.randomBytes(256, (err, buf) =>

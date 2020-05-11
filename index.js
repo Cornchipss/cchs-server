@@ -1,3 +1,5 @@
+// DONT FORGET (lyrics): https://developer.musixmatch.com/documentation/floating-lyrics
+
 const bodyParser = require('body-parser');
 const express = require('express');
 
@@ -29,11 +31,19 @@ const readline = require('readline').createInterface(
     output: process.stdout
 });
 
-// dbg
-app.get('/admin', (req, res, next) =>
+app.post('/admin', (req, res, next) =>
 {
-    console.log('ADMIN PAGE REQUESTED!');
-    next();
+    accountManager.isRequestLoggedIn(req, loggedIn =>
+    {
+        if(loggedIn)
+        {
+            next();
+        }
+        else
+        {
+            res.status(401).send('Unauthorized. Please login to access any /admin API.');
+        }
+    });
 });
 
 new (require('./componenets/status-component'))(categoryManager).init(app);

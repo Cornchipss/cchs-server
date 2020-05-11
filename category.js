@@ -15,7 +15,7 @@ module.exports = class
      */
     resetClock()
     {
-        this._nextPageTime = Date.now() + this._settings.interval;
+        this._nextPageTime = Date.now() + this.interval;
     }
 
     /**
@@ -24,7 +24,7 @@ module.exports = class
     nextPage()
     {
         this._currentPage = (this._currentPage + 1) % this.pages.length;
-        this._nextPageTime = Date.now() + this._settings.interval;
+        this._nextPageTime = Date.now() + this.interval;
     }
 
     /**
@@ -68,24 +68,18 @@ module.exports = class
                         {
                             throw new Error(err);
                         }
-
-                        this._settings = JSON.parse(data);
+                        
+                        let settings = JSON.parse(data);
 
                         this._name = name;
 
                         this._currentPage = 0;
-                        this._nextPageTime = Date.now() + this._settings.interval;
+                        this._nextPageTime = Date.now() + settings.interval;
 
-                        this._playlist = new Playlist(this._settings.playlist);
-                        let showtimeSplit = this._settings.showTime.split(':');
-                        this._showTime = 
-                        {
-                            hour: Number(showtimeSplit[0]),
-                            minute: Number(showtimeSplit[1]),
-                            second: Number(showtimeSplit[2])
-                        };
-
-                        this._playlistMode = this._settings.mode;
+                        this._playlist = new Playlist(settings.playlist);
+                        this._showTime = settings.showTime;
+                        
+                        this._playlistMode = settings.mode;
 
                         if(callback)
                             callback(this);
@@ -93,14 +87,19 @@ module.exports = class
                 }
                 else
                 {
-                    this._settings = {interval: 30000, playlist: 'default', start: '00:00:00'};
                     this._name = name;
                     
                     this._currentPage = 0;
-                    this._nextPageTime = Date.now() + this._settings.interval;
+                    this._nextPageTime = Date.now() + 30000;
                     
                     this._playlist = new Playlist('default');
-                    this._showTime = {hour: 0, minute: 0, second: 0};
+                    this._showTime =
+                    [
+                        {
+                            days: [ 0, 1, 2, 3, 4, 5, 6 ],
+                            times: [ "00:00:00" ]
+                        }
+                    ];
                     
                     this.save();
                     if(callback)
@@ -169,7 +168,12 @@ module.exports = class
 
     save(callback)
     {
-        fs.writeFile(this.path + 'settings.json', JSON.stringify(this.settings), 
+        fs.writeFile(this.path + 'settings.json', JSON.stringify({
+            interval: this.interval,
+            showTime: this.showTime,
+            mode: this.playlistMode,
+            playlist: this.playlist.name
+        }), 
         () => 
         {
             if(callback) callback();
@@ -178,9 +182,10 @@ module.exports = class
 
     get path() { return `${__dirname}/pages/${this.name}/`; }
 
+    get showTime() { return this._showTime; }
+
     get name() { return this._name; }
     get page() { return this.pages[this._currentPage]; }
-    get settings() { return this._settings; }
     get pages() { return this._pages; }
 
     get playlist() { return this._playlist; }

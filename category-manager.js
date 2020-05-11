@@ -8,9 +8,6 @@ module.exports = class
     constructor(callback)
     {
         this.init(callback);
-
-        this._currentCategory = 0;
-        this._nextCategoryTime = Date.now() + 1000 * 60 * 5; // 5 mins/category temp
     }
 
     /**
@@ -24,16 +21,17 @@ module.exports = class
         }
 
         if(this.category)
+        {
             this.category.update();
+        }
     }
 
     /**
-     * Advances the category regardless of time
+     * Advances the category
      */
     nextCategory()
     {
-        this._currentCategory = (this._currentCategory + 1) % this._categories.length;
-        this._nextCategoryTime = Date.now() + 1000 * 60 * 5; // 5 mins/category temp
+        throw new Error('foo');
     }
 
     categoryExists(name)
@@ -61,23 +59,71 @@ module.exports = class
         return cat;
     }
 
-    addCategory(cat, order)
+    // A jank way of representing these easily for comparisons
+    _encodeTime(time)
     {
-        if(!order)
-            this.categories.push(cat);
-        else
+        return time[2] + 100 * (time[1] + 100 * (time[0]));
+    }
+
+    addCategory(cat)
+    {
+        for(let day = 0; day < 7; day++)
         {
-            let newCats = new Array(this.categories.length);
-            for(let i = 0; i < order; i++)
+            let times = [];
+            
+            // Adds all the times displayed on this day
+
+            if(cat.showTime[day])
             {
-                newCats[i] = this.categories[i];
+                cat.showTime[day].forEach(time => 
+                    {
+                        let split = time.split(':');
+                        times.push([ Number(split[0]), Number(split[1]), Number(split[2]) ]);
+                    });
             }
-            newCats[order] = cat;
-            for(let i = order + 1; i < newCats.length; i++)
+
+            if(cat.showTime['*'])
+                cat.showTime['*'].forEach(time => 
+                    {
+                        let split = time.split(':');
+                        times.push([ Number(split[0]), Number(split[1]), Number(split[2]) ]);
+                    });
+
+            let place = this.order[day];
+
+            let added = 0;
+
+            for(let i = 0; i < place.length; i++)
             {
-                newCats[i] =  this.categories[i - 1];
+                let timeHere = place[i].time;
+
+                let cuantifiedTime = this._encodeTime(timeHere);
+
+                for(let j = 0; j < times.length; j++)
+                {
+                    if(cuantifiedTime > this._encodeTime(times[j]))
+                    {
+                        place.splice(i, 0, {time: times[j], category: cat});
+                        added++;
+                    }
+                }
+
+                if(added === times.length)
+                    break;
             }
-            this._categories = newCats;
+
+            if(added !== times.length)
+            {
+                times.sort((a, b) =>
+                {
+                    return this._encodeTime(a) - this._encodeTime(b);
+                });
+
+                while(times.length)
+                {
+                    place.push({ time: times.pop(), category: cat });
+                }
+            }
         }
     }
 
@@ -92,9 +138,36 @@ module.exports = class
         return data;
     }
 
-    get category() { return this._categories[this.currentCategoryIndex]; }
-    get currentCategoryIndex() { return this._currentCategory; }
-    get nextCategoryTime() { return this._nextCategoryTime; }
+    get category()
+    {
+        if(!this._orderIndex)
+            return undefined;
+        return this.order[this._orderIndex.day][this._orderIndex.index].category;
+    }
+    get nextCategoryTime()
+    {
+        let day = this._orderIndex.day;
+        let i = this._orderIndex.index + 1;
+        
+        // Makes sure the program doesnt get stuck in an infinite while loop if there are no categories to display
+        let iterations = 0;
+        while(this.order[day].length === i && iterations <= 7)
+        {
+            day++;
+            i = 0;
+
+            iterations++;
+        }
+
+        if(iterations === 8)
+            return undefined;
+        let timeToShow = this.order[day][i].time;
+
+        let show = new Date();
+        show.setDate(show.getDate() + iterations - 1);
+        show.setHours(timeToShow[0], timeToShow[1], timeToShow[2], 0);
+        return show;
+    }
 
     /**
      * Loads all the categories from the directory
@@ -113,12 +186,19 @@ module.exports = class
             if(err)
                 throw new Error(err);
 
+            this.order = new Array(7);
+            for(let i = 0; i < 7; i++)
+                this.order[i] = [];
+
             if(files.length === 0)
+            {
                 callback();
+            }
             else
             {
                 let done = 0;
                 let todo = 0;
+
                 files.forEach(f =>
                 {
                     todo++;
@@ -127,16 +207,67 @@ module.exports = class
                     {
                         if(err)
                             throw new Error(err);
-                        done++;
+
                         if(stats.isDirectory())
                         {
-                            this._categories.push(new Category(f));
-                        }
+                            let cat = new Category(f, () =>
+                            {
+                                done++;
 
-                        if(done === todo && callback)
-                        {
-                            callback();
-                        }    
+                                this.addCategory(cat);
+
+                                if(done === todo)
+                                {
+                                    // All categories were added, now let's figure out which goes first
+                                    this._orderIndex = undefined;
+
+                                    let now = new Date();
+
+                                    let today = now.getDay();
+                                    let hr = now.getHours();
+                                    let min = now.getMinutes();
+                                    let sec = now.getSeconds();
+
+                                    let timeNow = this._encodeTime([hr, min, sec]);
+
+                                    let todayOrder = this.order[today];
+                                    if(todayOrder)
+                                    {
+                                        for(let i = todayOrder.length - 1; i >= 0; i--)
+                                        {
+                                            let time = todayOrder[i].time;
+
+                                            if(this._encodeTime(time) < timeNow)
+                                            {
+                                                this._orderIndex = {day: today, index: i};
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if(!this._orderIndex)
+                                    {
+                                        for(let dDay = -1; dDay >= -7; dDay--)
+                                        {
+                                            let day = dDay + today;
+                                            if(day < 0)
+                                                day += 7;
+
+                                            let here = this.order[day];
+
+                                            // If none are ready to show today, the last one to show yesterday is the one to still show today.
+                                            if(here && here.length !== 0)
+                                            {
+                                                this._orderIndex = {day: day, index: here.length - 1};
+                                            }
+                                        }
+                                    }
+
+                                    if(callback)
+                                        callback();
+                                }
+                            });
+                        }
                     });
                 });
             }

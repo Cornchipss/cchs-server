@@ -48,7 +48,7 @@ module.exports =
                         return;
                     }
 
-                    module.exports.getSongId(id, callback);
+                    module.exports.getSongId(video.id, callback);
                 });
             }
         });
@@ -56,40 +56,53 @@ module.exports =
 
     getSongId: (id, callback) =>
     {
-        module.exports.songExistsId(id, (exists) =>
+        if(id)
         {
-            if(exists)
-                callback(undefined, exists);
-            else
+            module.exports.songExistsId(id, (exists) =>
             {
-                youtube.getVideoByID(id).then(video =>
+                if(exists)
+                    callback(undefined, exists);
+                else
                 {
-                    module.exports.downloadSong(id, video.title, callback);
-                });
-            }
-        });
+                    youtube.getVideoByID(id).then(video =>
+                    {
+                        module.exports.downloadSong(id, video.title, callback);
+                    });
+                }
+            });
+        }
+        else
+        {
+            callback('ID cannot be undefined.', 400);
+        }
     },
 
     getSongInfo: (id, callback) =>
     {
-        fs.readFile(SONGS_DIR + id + '\\details.json', {encoding: 'utf8'}, (err, res) =>
+        if(id)
         {
-            if(err)
+            fs.readFile(SONGS_DIR + id + '\\details.json', {encoding: 'utf8'}, (err, res) =>
             {
-                youtube.getVideoByID(id).then(video =>
+                if(err)
                 {
-                    callback(undefined, {name: video.title});
-                }).catch(err =>
+                    youtube.getVideoByID(id).then(video =>
+                    {
+                        callback(undefined, {name: video.title});
+                    }).catch(err =>
+                    {
+                        callback('Song with an ID of ' + id + ' was not found.', 400);
+                    });
+                }
+                else
                 {
-                    console.log(new Error(err));
-                    callback('Song with an ID of ' + id + ' was not found.', 400);
-                });
-            }
-            else
-            {
-                callback(undefined, JSON.parse(res));
-            }
-        });
+                    callback(undefined, JSON.parse(res));
+                }
+            });
+        }
+        else
+        {
+            callback('An ID must be provided.', 400);
+        }
     },
 
     // The Youtube to Mp3 library can only handle one song at a time or it breaks, a que is used to prevent breakage
