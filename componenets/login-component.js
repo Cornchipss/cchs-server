@@ -31,6 +31,7 @@ module.exports = class extends Component
             {
                 if(username)
                 {
+                    req.session.user = token;
                     res.status(200).type('json').send(JSON.stringify({username: username}));
                 }
                 else
@@ -45,6 +46,7 @@ module.exports = class extends Component
             {
                 if(token)
                 {
+                    req.session.user = token;
                     res.status(200).type('json').send(JSON.stringify({token: token}));
                 }
                 else

@@ -78,7 +78,6 @@ window.addEventListener('DOMContentLoaded', () =>
                     let song = nextSong();
 
                     let ctx = new AudioContext();
-                    console.log(song);
 
                     let songNameFinished = false;
                     let songDownloadFinished = false;

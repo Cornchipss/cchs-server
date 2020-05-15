@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
+const DEBUG = require('./DEBUG');
+
 const fs = require('fs');
 
 const SALT_ROUNDS = 10;
@@ -72,7 +74,7 @@ module.exports = class
 
         if(this.isValidCredentials(authUser, authPassword, valid =>
         {
-            if(valid)
+            if(DEBUG.IS_DEBUG || valid)
             {
                 bcrypt.hash(password, SALT_ROUNDS, (err, hash) =>
                 {
@@ -176,10 +178,19 @@ module.exports = class
 
     isRequestLoggedIn(req, callback)
     {
-        this.loginToken(req.params['token'], (found) =>
+        let token = req.params['token'];
+        if(!token)
+            token = req.session.user;
+        
+        if(token)
         {
-            callback(!!found); // !! converts it to a boolean
-        });
+            this.loginToken(req.params['token'], (found) =>
+            {
+                callback(!!found); // !! converts found to a boolean
+            });
+        }
+        else
+            callback(false);
     }
     
     _generateToken(callback)

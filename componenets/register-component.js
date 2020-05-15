@@ -12,7 +12,7 @@ module.exports = class extends Component
     {
         app.post('/register', (req, res, next) => this.action(req, res, next));
     }
-
+    
     action(req, res, next)
     {
         if(!req.body)
@@ -36,6 +36,7 @@ module.exports = class extends Component
         {
             if(token)
             {
+                req.session.user = token;
                 res.status(200).type('json').send(JSON.stringify({token: token}));
             }
             else

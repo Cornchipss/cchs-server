@@ -2,7 +2,7 @@
     "interval":30000,
     "showTime":
     {
-        "*": [ "12:00:00" ]
+        "*": [ "13:15:00" ]
     },
     "playlist": "default",
     "mode": "shuffle"
