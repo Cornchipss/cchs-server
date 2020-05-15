@@ -54,6 +54,7 @@ const readline = require('readline').createInterface(
 
 app.get('/admin', (req, res, next) =>
 {
+    console.log(req.session);
     accountManager.isRequestLoggedIn(req, loggedIn =>
     {
         if(loggedIn)
@@ -69,6 +70,7 @@ app.get('/admin', (req, res, next) =>
 
 app.post('/admin', (req, res, next) =>
 {
+    console.log(req.session);
     accountManager.isRequestLoggedIn(req, loggedIn =>
     {
         if(loggedIn)

@@ -121,11 +121,12 @@ module.exports = class
 
             if(added !== times.length)
             {
+                // Sorts them from greatest -> smallest so I can remove them from back to front
                 times.sort((a, b) =>
                 {
                     return this._encodeTime(a) - this._encodeTime(b);
                 });
-
+                
                 while(times.length)
                 {
                     place.push({ time: times.pop(), category: cat });

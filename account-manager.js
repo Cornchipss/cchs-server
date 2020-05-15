@@ -178,13 +178,11 @@ module.exports = class
 
     isRequestLoggedIn(req, callback)
     {
-        let token = req.params['token'];
-        if(!token)
-            token = req.session.user;
+        let token = req.params['token'] || req.session.user;
         
         if(token)
         {
-            this.loginToken(req.params['token'], (found) =>
+            this.loginToken(token, (found) =>
             {
                 callback(!!found); // !! converts found to a boolean
             });
