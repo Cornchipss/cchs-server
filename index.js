@@ -34,6 +34,9 @@ app.use(session(
 // Makes express able to understand data given to it from HTML forms
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Makes express able to understand JSON data
+app.use(bodyParser.json());
+
 const port = 8675;
 
 const categoryManager = new CategoryManager();
@@ -54,7 +57,6 @@ const readline = require('readline').createInterface(
 
 app.get('/admin', (req, res, next) =>
 {
-    console.log(req.session);
     accountManager.isRequestLoggedIn(req, loggedIn =>
     {
         if(loggedIn)
@@ -70,7 +72,6 @@ app.get('/admin', (req, res, next) =>
 
 app.post('/admin', (req, res, next) =>
 {
-    console.log(req.session);
     accountManager.isRequestLoggedIn(req, loggedIn =>
     {
         if(loggedIn)

@@ -3,18 +3,19 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>Login</title>
+
+        <script src="/js/cookies.js"></script>
+        <script src="login.js"></script>
     </head>
     <body>
-        <form action="/login" method="post">
-            <input type="text" id="token" name="token">
-            <input type="submit" value="submit">
-        </form>
-
-        <form action="/login" method="post">
-            <input type="text" name="username" id="username">
-            <input type="password" name="password" id="password">
-            <input type="submit" value="Do it.">
+        <h1>Login</h1>
+        <form id="form" action="/login" method="post">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" autocomplete="username" required>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" autocomplete="current-password" required>
+            <input type="submit" value="Login">
         </form>
     </body>
 </html>

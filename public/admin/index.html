@@ -6,18 +6,62 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Admin</title>
 
+        <link rel="stylesheet" href="/css/styles.css">
+        <link rel="stylesheet" href="/css/default.css">
+        <link rel="stylesheet" href="styles.css">
+
+        <script src="/js/cookies.js"></script>
+        <script src="/js/server-handler.js"></script>
+
         <script>
-                
+            document.addEventListener('DOMContentLoaded', () =>
+            {
+                serverHandler.onChange(() =>
+                {
+                    console.log(serverHandler);
+
+                    document.getElementById('category').innerHTML = serverHandler.category;
+                    document.getElementById('page').innerHTML = serverHandler.pages[serverHandler.page];
+
+                    finishLoading();
+                });
+
+                serverHandler.start();
+
+                let username = document.getElementById('username');
+                username.innerHTML = cookieUtilities.getCookie('username');
+            });
+
+            function finishLoading()
+            {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('info').style.display = 'block';
+            }
         </script>
     </head>
     <body>
-        <h1>This is the index file</h1>
+        <noscript>Page requires JavaScript to load.</noscript>
+        <div id="content">
+            <h1>Hey, <span id="username"></span></h1>
 
-        <form action="/api/page" enctype="multipart/form-data" method="POST">
-            <label for="page">File to display as page</label> <input type="file" name="page" required> <br>
-            <label for="name">Name of the page</label> <input type="text" name="name" required> <br>
-            <label for="category">Category of the page</label> <input type="text" name="category" required> <br>
-            <input type="submit">
-        </form>
+            <div id="loading">
+                <div class="loader"></div>
+            </div>
+            <div id="info" style="display: none">
+                <!--
+                <form action="/api/page" enctype="multipart/form-data" method="POST">
+                    <label for="page">File to display as page</label> <input type="file" name="page" required> <br>
+                    <label for="name">Name of the page</label> <input type="text" name="name" required> <br>
+                    <label for="category">Category of the page</label> <input type="text" name="category" required> <br>
+                    <input type="submit">
+                </form>
+                                -->
+
+                <h1>Category: <span id="category"></span></h1>
+                <p>Page: <span id="page"></span></p>
+            </div>
+
+            
+        </div>
     </body>
 </html>
