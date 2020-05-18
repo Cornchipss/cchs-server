@@ -18,10 +18,23 @@
             {
                 serverHandler.onChange(() =>
                 {
-                    console.log(serverHandler);
-
                     document.getElementById('category').innerHTML = serverHandler.category;
                     document.getElementById('page').innerHTML = serverHandler.pages[serverHandler.page];
+
+                    let playlistUI = document.getElementById('playlist');
+                    let playlistModeUI = document.getElementById('playlist-mode');
+                    playlistUI.innerHTML = serverHandler.playlist;
+                    playlistModeUI.innerHTML = serverHandler.playlistMode;
+
+                    let songsUI = document.getElementById('songs');
+                    songsUI.innerHTML = '';
+
+                    serverHandler.songNames.forEach(s =>
+                    {
+                        let node = document.createElement('li');
+                        node.appendChild(document.createTextNode(s));
+                        songsUI.appendChild(node);
+                    });
 
                     finishLoading();
                 });
@@ -35,15 +48,68 @@
             function finishLoading()
             {
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('info').style.display = 'block';
+                document.getElementById('info').style.display = 'flex';
             }
         </script>
+
+        <style>
+            h1
+            {
+                text-align: center;
+                color: #048;
+                font-size: 3em;
+                padding: 10px 0;
+            }
+            #info
+            {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+            .split
+            {
+                display: flex;
+                flex-direction: row;
+                flex: 1;
+                padding: 0 20%;
+            }
+            .a
+            {
+                flex: 2;
+            }
+            .b
+            {
+                flex: 1;
+            }
+
+            ul
+            {
+                margin: 5px;
+                list-style-type: none;
+            }
+
+            @media only screen and (max-width: 1000px) 
+            {
+                .split
+                {
+                    padding: 0 10%;
+                    flex-direction: column;
+                }
+            }
+
+            @media only screen and (max-width: 600px) 
+            {
+                .split
+                {
+                    flex-direction: column;
+                    padding: 0;
+                }
+            }
+        </style>
     </head>
     <body>
         <noscript>Page requires JavaScript to load.</noscript>
         <div id="content">
-            <h1>Hey, <span id="username"></span></h1>
-
             <div id="loading">
                 <div class="loader"></div>
             </div>
@@ -55,13 +121,29 @@
                     <label for="category">Category of the page</label> <input type="text" name="category" required> <br>
                     <input type="submit">
                 </form>
-                                -->
+                -->
 
-                <h1>Category: <span id="category"></span></h1>
-                <p>Page: <span id="page"></span></p>
+                <h1>Control Pannel</h1>
+                
+                <div class="split">
+                    <div class="a">
+                        <h2>Hey, <span id="username"></span></h2>
+
+                        <h2>Current Category: <span id="category"></span></h2>
+                        <p>Page: <span id="page"></span></p>  
+                        <p><a href="/live"><button>Go to live view</button></a></p>
+                        <p><a href="/admin/add-page">Add page</a></p>
+                        <p><a href="/admin/category-change">Modify categories</a></p>
+                        <p><a href="/admin/create-page">Create page</a></p>
+                    </div>
+                    <div class="b">
+                        <h3>Playlist: <span id="playlist"></span></h3>
+                        <p>Playlist Mode: <span id="playlist-mode"></span></p>
+                        <a href="/admin/playlist-change/">Modify</a>
+                        <ul id="songs"></ul>
+                    </div>
+                </div>
             </div>
-
-            
         </div>
     </body>
 </html>

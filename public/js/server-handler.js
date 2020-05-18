@@ -1,12 +1,20 @@
 let onChanges = [];
+let onReady = [];
 
 let prevCategory = undefined;
+
+let onReadyCalled = false;
 
 var serverHandler =
 {
     onChange: (func) =>
     {
         onChanges.push(func);
+    },
+
+    onReady: (func) =>
+    {
+        onReady.push(func);
     },
 
     /**
@@ -25,7 +33,9 @@ var serverHandler =
 
     category: undefined,
     page: undefined,
-    songs: undefined,
+    songNames: undefined,
+    songIds: undefined,
+    playlist: undefined,
     playlistMode: undefined,
     pages: undefined,
 
@@ -36,11 +46,10 @@ var serverHandler =
             serverHandler.category = res.currentCategory.name;
             serverHandler.pages = res.currentCategory.pages;
             serverHandler.page = res.currentCategory.currentPage;
+            serverHandler.playlist = res.currentCategory.playlist;
             
             let time = res.nextCategoryTime < res.currentCategory.nextPageTime ? res.nextCategoryTime : res.currentCategory.nextPageTime;
             setTimeout(serverHandler.start, time - Date.now() + 1000) // wait the ms until the next change + 1 sec to make sure server has processed everything
-    
-            let sameCat = true;
     
             if(prevCategory !== res.currentCategory.name)
             {
@@ -48,11 +57,39 @@ var serverHandler =
                 prevCategory = res.currentCategory.name;
     
                 // Different category = new playlist
-                serverHandler.songs = res.playlist.songs;
+                serverHandler.songIds = res.playlist.songs;
+
+                serverHandler.songNames = new Array(serverHandler.songIds.length);
+
+                let fin = 0;
+                for(let i = 0; i < serverHandler.songIds.length; i++)
+                {
+                    fetch('/api/songinfo?id=' + serverHandler.songIds[i])
+                    .then(res => res.text())
+                    .then(res =>
+                    {
+                        serverHandler.songNames[i] = JSON.parse(res).name;
+                        fin++;
+
+                        if(fin === serverHandler.songIds.length)
+                        {
+                            if(!onReadyCalled)
+                            {
+                                onReady.forEach(f => f());
+                                onReadyCalled = true;
+                            }
+
+                            onChanges.forEach(f => f(false));
+                        }
+                    });
+                }
+
                 serverHandler.playlistMode = res.currentCategory.playlistMode;
             }
-    
-            onChanges.forEach(f => f(sameCat));
+            else
+            {
+                onChanges.forEach(f => f(true));
+            }
         }));
     }
 };

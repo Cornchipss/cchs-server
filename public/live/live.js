@@ -1,4 +1,9 @@
-window.addEventListener('DOMContentLoaded', () =>
+document.addEventListener('DOMContentLoaded', () =>
+{
+    serverHandler.start();
+});
+
+serverHandler.onReady(() =>
 {
     const SONG_NOTIFICATION_TIME = 5; // in seconds
     const SONG_FADE_TIME = 2; // in seconds
@@ -32,8 +37,10 @@ window.addEventListener('DOMContentLoaded', () =>
         {
             reorderSongs(songs.length, serverHandler.playlistMode);
         }
-    
-        return serverHandler.songs[songOrder.pop()];
+        
+        let index = songOrder.pop();
+
+        return {id: serverHandler.songIds[index], name: serverHandler.songNames[index] };
     }
     
     serverHandler.onChange((sameCat) =>
@@ -51,38 +58,15 @@ window.addEventListener('DOMContentLoaded', () =>
         {
             firstRun = false;
     
-            reorderSongs(serverHandler.songs.length, serverHandler.playlistMode);
+            reorderSongs(serverHandler.songIds.length, serverHandler.playlistMode);
     
             function songPlayer()
             {
                 let song = nextSong();
     
                 let ctx = new AudioContext();
-    
-                let songNameFinished = false;
-                let songDownloadFinished = false;
-    
-                let songName;
                 
-                fetch('/api/songinfo?id=' + song)
-                    .then(data => data.json())
-                    .then((json) =>
-                    {
-                        songName = json.name;
-                        songNameFinished = true;
-    
-                        if(songDownloadFinished)
-                        {
-                            songParagraph.innerHTML = songName;
-                            songParagraph.style.opacity = 1;
-                            setTimeout(() =>
-                            {
-                                songParagraph.style.opacity = 0;
-                            }, SONG_FADE_TIME * 1000 + SONG_NOTIFICATION_TIME * 1000);    
-                        }
-                    });
-    
-                fetch('/api/song?id=' + song)
+                fetch('/api/song?id=' + song.id)
                     .then(data => data.arrayBuffer())
                     .then(buffer => ctx.decodeAudioData(buffer))
                     .then(audioData =>
@@ -95,27 +79,20 @@ window.addEventListener('DOMContentLoaded', () =>
                         {
                             playsound.disconnect();
                             ctx.close();
-    
+                            
                             songPlayer();
                         });
-    
-                        songDownloadFinished = true;
-    
-                        if(songNameFinished)
+
+                        songParagraph.innerHTML = song.name;
+                        songParagraph.style.opacity = 1;
+                        setTimeout(() =>
                         {
-                            songParagraph.innerHTML = songName;
-                            songParagraph.style.opacity = 1;
-                            setTimeout(() =>
-                            {
-                                songParagraph.style.opacity = 0;
-                            }, SONG_FADE_TIME * 1000 + SONG_NOTIFICATION_TIME * 1000);    
-                        }
+                            songParagraph.style.opacity = 0;
+                        }, SONG_FADE_TIME * 1000 + SONG_NOTIFICATION_TIME * 1000);    
                     });
             }
     
             songPlayer();
         }
     });
-    
-    serverHandler.start();
 });
