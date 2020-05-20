@@ -3,6 +3,7 @@ const Component = require('./component');
 const multer = require('multer');
 const Category = require('../category');
 const upload = multer({dest: './uploads/'}); // ./uploads/ is a temp directory to store all uploaded files
+const mime = require('mime');
 
 module.exports = class extends Component
 {
@@ -14,19 +15,37 @@ module.exports = class extends Component
 
     init(app)
     {
-        app.post('/api/page', upload.single('page'), (req, res, next) => this.action(req, res, next));
+        app.post('/admin/api/page', upload.single('page'), (req, res, next) => 
+        {
+            this.action(req, res, next)
+        });
     }
 
     action(req, res, next)
     {
-        let file = req.file;
+        let file = req.file; // There is no way of checking if this is a markdown file. So I just assume
         let name = req.body['name'];
         let category = req.body['category'];
 
         if(!file || !name || !category)
         {
-            res.status(400).send('Must specify a file, name, and category.');
+            res.type('json').status(400).send(JSON.stringify({error: 'Must specify a file, name, and category.'}));
             return;
+        }
+
+        for(let i = 0; i < name.length; i++)
+        {
+            let c = name.charAt(i);
+            if(!('A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || '0' <= c && c <= '9' || c === '-' || c === '_'))
+            {
+                err(nameUI, 'File name may only have a-z, 0-9, - and _');
+                res.type('json').status(400).send(JSON.stringify({error: 'File name may only have a-z, 0-9, - and _'}));
+            }
+        }
+
+        if(name.length > 30)
+        {
+            res.type('json').status(400).send(JSON.stringify({error: 'Name cannot be over 30 characters'}));
         }
 
         if(this.categoryManager.categoryExists(category))
@@ -38,14 +57,18 @@ module.exports = class extends Component
         }
         else
         {
-            this.categoryManager.addCategory(
-                new Category(category, (cat) =>
-                {
-                    cat.addPage(name, file, -1, () =>
-                    {
-                        res.status(200).type('json').send(JSON.stringify({success: true}));
-                    });
-                }));
+            res.status(400).type('json').send(JSON.stringify({error: `Category "${category}" does not exist!`}));
         }
+        // else
+        // {
+        //     this.categoryManager.addCategory(
+        //         new Category(category, (cat) =>
+        //         {
+        //             cat.addPage(name, file, -1, () =>
+        //             {
+        //                 res.status(200).type('json').send(JSON.stringify({success: true}));
+        //             });
+        //         }));
+        // }
     }
 }

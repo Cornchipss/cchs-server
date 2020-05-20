@@ -13,99 +13,9 @@
         <script src="/js/cookies.js"></script>
         <script src="/js/server-handler.js"></script>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () =>
-            {
-                serverHandler.onChange(() =>
-                {
-                    document.getElementById('category').innerHTML = serverHandler.category;
-                    document.getElementById('page').innerHTML = serverHandler.pages[serverHandler.page];
-
-                    let playlistUI = document.getElementById('playlist');
-                    let playlistModeUI = document.getElementById('playlist-mode');
-                    playlistUI.innerHTML = serverHandler.playlist;
-                    playlistModeUI.innerHTML = serverHandler.playlistMode;
-
-                    let songsUI = document.getElementById('songs');
-                    songsUI.innerHTML = '';
-
-                    serverHandler.songNames.forEach(s =>
-                    {
-                        let node = document.createElement('li');
-                        node.appendChild(document.createTextNode(s));
-                        songsUI.appendChild(node);
-                    });
-
-                    finishLoading();
-                });
-
-                serverHandler.start();
-
-                let username = document.getElementById('username');
-                username.innerHTML = cookieUtilities.getCookie('username');
-            });
-
-            function finishLoading()
-            {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('info').style.display = 'flex';
-            }
-        </script>
-
-        <style>
-            h1
-            {
-                text-align: center;
-                color: #048;
-                font-size: 3em;
-                padding: 10px 0;
-            }
-            #info
-            {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-            .split
-            {
-                display: flex;
-                flex-direction: row;
-                flex: 1;
-                padding: 0 20%;
-            }
-            .a
-            {
-                flex: 2;
-            }
-            .b
-            {
-                flex: 1;
-            }
-
-            ul
-            {
-                margin: 5px;
-                list-style-type: none;
-            }
-
-            @media only screen and (max-width: 1000px) 
-            {
-                .split
-                {
-                    padding: 0 10%;
-                    flex-direction: column;
-                }
-            }
-
-            @media only screen and (max-width: 600px) 
-            {
-                .split
-                {
-                    flex-direction: column;
-                    padding: 0;
-                }
-            }
-        </style>
+        <script src="js/ui-handler.js"></script>
+        <script src="js/load.js"></script>
+        <script src="js/add-page.js"></script>
     </head>
     <body>
         <noscript>Page requires JavaScript to load.</noscript>
@@ -114,35 +24,36 @@
                 <div class="loader"></div>
             </div>
             <div id="info" style="display: none">
-                <!--
-                <form action="/api/page" enctype="multipart/form-data" method="POST">
-                    <label for="page">File to display as page</label> <input type="file" name="page" required> <br>
-                    <label for="name">Name of the page</label> <input type="text" name="name" required> <br>
-                    <label for="category">Category of the page</label> <input type="text" name="category" required> <br>
-                    <input type="submit">
-                </form>
-                -->
-
-                <h1>Control Pannel</h1>
+                <h1>Control Pannel / <span id="username"></span></h1>
                 
                 <div class="split">
                     <div class="a">
-                        <h2>Hey, <span id="username"></span></h2>
-
-                        <h2>Current Category: <span id="category"></span></h2>
-                        <p>Page: <span id="page"></span></p>  
-                        <p><a href="/live"><button>Go to live view</button></a></p>
-                        <p><a href="/admin/add-page">Add page</a></p>
-                        <p><a href="/admin/category-change">Modify categories</a></p>
-                        <p><a href="/admin/create-page">Create page</a></p>
+                        <h2>Categories</h2>
+                        <ul id="categories"></ul>
                     </div>
                     <div class="b">
                         <h3>Playlist: <span id="playlist"></span></h3>
                         <p>Playlist Mode: <span id="playlist-mode"></span></p>
-                        <a href="/admin/playlist-change/">Modify</a>
                         <ul id="songs"></ul>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div id="add-page-UI" style="display: none">
+            <div class="text-area">
+                <div class="title-bar">
+                    <span class="title">Add page</span> <button class="close" onclick="ui.addPageUIClose()">&times;</button>
+                </div>
+                <form id="form" action="admin/api/page" enctype="multipart/form-data" method="POST">
+                    <label for="page">Choose page's file</label> 
+                    <input id="file" type="file" name="page" accept=".md" required>
+                    <label for="name">Name of the page</label> 
+                    <input id="name" type="text" name="name" autocomplete="off" required>
+                    <label for="category">Category of the page</label>
+                    <select id="category" name="category" id="category"></select>
+                    <input type="submit" value="Add Page">
+                </form>
             </div>
         </div>
     </body>

@@ -4,3 +4,34 @@
     display: flex;
     flex-direction: column;
 }
+
+h1
+{
+    text-align: center;
+    color: #048;
+    font-size: 3em;
+    padding: 10px 0;
+}
+
+#content
+{
+    margin: 0 20%;
+}
+
+@media only screen and (max-width: 1000px) 
+{
+    #content
+    {
+        margin: 0 10%;
+        flex-direction: column;
+    }
+}
+
+@media only screen and (max-width: 600px) 
+{
+    #content
+    {
+        flex-direction: column;
+        margin: 0;
+    }
+}

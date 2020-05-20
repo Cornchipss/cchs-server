@@ -20,6 +20,7 @@
     "bcryptjs": "^2.4.3",
     "client-sessions": "^0.8.0",
     "express": "^4.17.1",
+    "mime": "^2.4.5",
     "multer": "^1.4.2",
     "simple-youtube-api": "^5.2.1",
     "youtube-mp3-downloader": "^0.6.7"
