@@ -1,4 +1,8 @@
 const Component = require('./component');
+const md = require('markdown-it')()
+    .use(require('markdown-it-mermaid').default)
+    .use(require('markdown-it-emoji'))
+    .use(require('markdown-it-latex').default);
 const fs = require('fs');
 
 module.exports = class extends Component
@@ -11,7 +15,7 @@ module.exports = class extends Component
 
     init(app)
     {
-        app.get('/api/page/', (req, res, next) => this.action(req, res, next));
+        app.get('/api/render/', (req, res, next) => this.action(req, res, next));
     }
 
     action(req, res, next)
@@ -36,12 +40,22 @@ module.exports = class extends Component
             return;
         }
 
-        let path = `${absoluteDir}/pages/${cat}/${page}/index.html`; 
+        let path = `${absoluteDir}/pages/${cat}/${page}/index.md`; 
         fs.exists(path, exists =>
         {
             if(exists)
             {
-                res.status(200).sendFile(path);
+                fs.readFile(path, {encoding: 'utf8'}, (err, data) =>
+                {
+                    if(err)
+                    {
+                        res.status(500).type('json').send(JSON.stringify({error: err}));
+                    }
+                    else
+                    {
+                        res.status(200).type('html').send(md.render(data));
+                    }
+                });
             }
             else
             {

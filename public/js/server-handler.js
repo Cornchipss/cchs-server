@@ -25,7 +25,7 @@ var serverHandler =
         if(serverHandler.page === undefined || serverHandler.category === undefined)
             return callback(undefined);
 
-        fetch(`/api/page?name=${serverHandler.pages[serverHandler.page]}&category=${serverHandler.category}`)
+        fetch(`/api/render?name=${serverHandler.pages[serverHandler.page]}&category=${serverHandler.category}`)
             .then(res => res.text()
             .then(res =>
             callback(res)));

@@ -62,5 +62,9 @@ module.exports = class extends Component
                 }
             });
         }
+        else
+        {
+            res.status(400).send('Invalid id/name');
+        }
     }
 }

@@ -65,7 +65,7 @@ serverHandler.onReady(() =>
                 let song = nextSong();
     
                 let ctx = new AudioContext();
-                
+
                 fetch('/api/song?id=' + song.id)
                     .then(data => data.arrayBuffer())
                     .then(buffer => ctx.decodeAudioData(buffer))

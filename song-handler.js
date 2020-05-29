@@ -58,18 +58,25 @@ module.exports =
     {
         if(id)
         {
-            module.exports.songExistsId(id, (exists) =>
+            if(id.length === "dQw4w9WgXcQ".length)
             {
-                if(exists)
-                    callback(undefined, exists);
-                else
+                module.exports.songExistsId(id, (exists) =>
                 {
-                    youtube.getVideoByID(id).then(video =>
+                    if(exists)
+                        callback(undefined, exists);
+                    else
                     {
-                        module.exports.downloadSong(id, video.title, callback);
-                    });
-                }
-            });
+                        youtube.getVideoByID(id).then(video =>
+                        {
+                            module.exports.downloadSong(id, video.title, callback);
+                        });
+                    }
+                });
+            }
+            else
+            {
+                callback('ID is an invalid length.', 400);
+            }
         }
         else
         {

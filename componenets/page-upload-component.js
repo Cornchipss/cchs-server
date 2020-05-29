@@ -2,7 +2,8 @@ const Component = require('./component');
 
 const multer = require('multer');
 const Category = require('../category');
-const upload = multer({dest: './uploads/'}); // ./uploads/ is a temp directory to store all uploaded files
+// 2 MB max file size
+const upload = multer({fileSize: 1024 * 1024 * 2, dest: './uploads/'}); // ./uploads/ is a temp directory to store all uploaded files
 const mime = require('mime');
 
 module.exports = class extends Component

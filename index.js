@@ -88,6 +88,7 @@ app.post('/admin', (req, res, next) =>
 new (require('./componenets/status-component'))(categoryManager).init(app);
 new (require('./componenets/bulk-component'))(categoryManager).init(app);
 new (require('./componenets/page-component'))(categoryManager).init(app);
+new (require('./componenets/render-component'))(categoryManager).init(app);
 
 new (require('./componenets/login-component'))(accountManager).init(app);
 new (require('./componenets/register-component'))(accountManager).init(app);
@@ -96,7 +97,7 @@ new (require('./componenets/page-upload-component'))(categoryManager).init(app);
 
 new (require('./componenets/song-component'))().init(app);
 
-app.get('/api', (req, res) =>
+app.use('/api', (req, res) =>
 {
     res.status(404).type('json').send(JSON.stringify({ error: 'Please specify an API request - docs @ /docs' }));
 });
