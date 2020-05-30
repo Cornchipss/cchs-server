@@ -36,12 +36,12 @@ module.exports = class extends Component
             return;
         }
 
-        let path = `${absoluteDir}/pages/${cat}/${page}/index.html`; 
+        let path = `${absoluteDir}/pages/${cat}/${page}/index.md`; 
         fs.exists(path, exists =>
         {
             if(exists)
             {
-                res.status(200).sendFile(path);
+                res.status(200).type('text').sendFile(path);
             }
             else
             {

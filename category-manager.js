@@ -102,9 +102,7 @@ module.exports = class
 
             for(let i = 0; i < place.length; i++)
             {
-                let timeHere = place[i].time;
-
-                let cuantifiedTime = this._encodeTime(timeHere);
+                let cuantifiedTime = this._encodeTime(place[i].time);
 
                 for(let j = 0; j < times.length; j++)
                 {
@@ -161,7 +159,7 @@ module.exports = class
         let iterations = 0;
         while(this.order[day].length === i && iterations <= 7) // <= 7 because if no categories were found for any other day, I want to loop back around to the current day and select from there
         {
-            day++;
+            day = (day + 1) % 7;
             i = 0;
 
             iterations++;
@@ -169,11 +167,13 @@ module.exports = class
 
         if(iterations === 8)
             return undefined;
+        
         let timeToShow = this.order[day][i].time;
 
         let show = new Date();
         show.setDate(show.getDate() + iterations);
         show.setHours(timeToShow[0], timeToShow[1], timeToShow[2], 0);
+
         return show;
     }
 
@@ -196,10 +196,11 @@ module.exports = class
 
             this.order = new Array(7);
             for(let i = 0; i < 7; i++)
-                this.order[i] = [];
+                this.order[i] = []; // [ { category: Category, time: [hr, min, sec] } ]
 
             if(files.length === 0)
             {
+                // No cats to load :)
                 callback();
             }
             else
@@ -220,9 +221,8 @@ module.exports = class
                         {
                             let cat = new Category(f, () =>
                             {
-                                done++;
-
                                 this.addCategory(cat);
+                                done++;
 
                                 if(done === todo)
                                 {

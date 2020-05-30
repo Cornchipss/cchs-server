@@ -112,7 +112,7 @@ module.exports = class
 
     addPage(name, file, order, callback)
     {
-        let path = `${this.path}/${name}/index.html`;
+        let path = `${this.path}/${name}/index.md`;
         fs.mkdir(path.substr(0, path.lastIndexOf('/')), {recursive: true}, err =>
         {
             if(err)
