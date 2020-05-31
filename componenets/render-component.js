@@ -1,8 +1,10 @@
 const Component = require('./component');
-const md = require('markdown-it')()
-    .use(require('markdown-it-mermaid').default)
-    .use(require('markdown-it-emoji'))
-    .use(require('markdown-it-latex').default);
+const markdownIt = require('markdown-it');
+let md = new markdownIt();
+md.use(require('markdown-it-emoji'));
+md.use(require('markdown-it-latex').default);
+md.use(require('markdown-it-highlightjs'));
+
 const fs = require('fs');
 
 module.exports = class extends Component

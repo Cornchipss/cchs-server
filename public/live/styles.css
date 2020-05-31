@@ -95,4 +95,8 @@
       -ms-flex: 1;
           flex: 1;
 }
+
+.markdown-body {
+  margin: 0 10%;
+}
 /*# sourceMappingURL=styles.css.map */

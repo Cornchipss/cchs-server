@@ -47,10 +47,24 @@ var serverHandler =
             serverHandler.pages = res.currentCategory.pages;
             serverHandler.page = res.currentCategory.currentPage;
             serverHandler.playlist = res.currentCategory.playlist;
+
+            let time;
+            if(res.nextCategoryTime !== undefined)
+            {
+                time = res.nextCategoryTime;
+            }
+            if(res.nextPageTime !== undefined && res.nextPageTime < res.nextCategoryTime 
+                    || res.nextCategoryTime === undefined)
+            {
+                time = res.nextPageTime;
+            }
+
+            if(time !== undefined)
+            {
+                let time = res.nextCategoryTime < res.currentCategory.nextPageTime ? res.nextCategoryTime : res.currentCategory.nextPageTime;
+                setTimeout(serverHandler.start, time - Date.now() + 1000) // wait the ms until the next change + 1 sec to make sure server has processed everything
+            }        
             
-            let time = res.nextCategoryTime < res.currentCategory.nextPageTime ? res.nextCategoryTime : res.currentCategory.nextPageTime;
-            setTimeout(serverHandler.start, time - Date.now() + 1000) // wait the ms until the next change + 1 sec to make sure server has processed everything
-    
             if(prevCategory !== res.currentCategory.name)
             {
                 sameCat = false;
