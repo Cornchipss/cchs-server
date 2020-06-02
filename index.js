@@ -37,6 +37,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Makes express able to understand JSON data
 app.use(bodyParser.json());
 
+app.use(bodyParser.raw());
+
 const port = 8675;
 
 const categoryManager = new CategoryManager();

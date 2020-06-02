@@ -3,30 +3,88 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>Page Creator</title>
 
-        <link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.16.3/grapes.min.js"></script>
+        <style>
+            *
+            {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            html
+            {
+                width: 100%;
+                min-height: 100%;
+                display: flex;
+                margin: 0;
+                padding: 0;
+            }
+
+            body
+            {
+                flex: 1;
+                display: flex;
+                flex-direction: row;
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
+
         <script src="http://danml.com/js/download2.js"></script>
 
-        <link rel="stylesheet" href="/css/styles.css">
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () =>
+            {
+                let oldContent = undefined;
+                setInterval(() =>
+                {
+                    let content = document.getElementById('content').innerText;
+                    if(oldContent !== content)
+                    {
+                        if(content)
+                        {
+                            fetch('/api/render?src=' + content, 
+                            {
+                                method: 'post', 
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({src: content})
+                            }).then(res =>
+                            {
+                                res.text().then(res =>
+                                {
+                                    document.getElementById('preview').innerHTML = res;
+                                })
+                            });
+                        }
+                        oldContent = content;
+                    }
+                }, 1000);
+            });
+        </script>
     </head>
     <body>
         <div id="gjs"></div>
 
-        <button onclick="save()">Save</button>
+        <div style="position: absolute; top: 0; right: 0;">
+            <button onclick="save()" style="padding: 16px 12px;">Save</button>
+        </div>
+
+        <div style="flex: 1; padding: 10px; border-right: solid thick grey;" contenteditable="true" id="content">
+            [Content goes here]
+        </div>
+
+        <div style="flex: 1; padding-left: 10px;" id="preview">
+        </div>
 
         <script>
-            var editor = grapesjs.init(
-            {
-                container : '#gjs',
-                components: `<div class="txt-red">Hello world!</div> <div>jhi</div>`,
-                style: '.txt-red{color: red}',
-            });
-
             function save()
             {
-                download(`<style>${editor.getCss()}</style>\n<body>${editor.getHtml()}</body>`, 'page.html', 'text/html');
+                download(document.getElementById('content').innerText, 'page.md', 'text/md');
             }
         </script>
     </body>

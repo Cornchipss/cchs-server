@@ -18,6 +18,21 @@ module.exports = class extends Component
     init(app)
     {
         app.get('/api/render/', (req, res, next) => this.action(req, res, next));
+        // For handling large payloads
+        app.post('/api/render/', (req, res, next) => this.postAction(req, res, next));
+    }
+
+    postAction(req, res, next)
+    {
+        let src = req.body['src'];
+        if(src)
+        {
+            res.status(200).type('html').send(md.render(src));
+        }
+        else
+        {
+            res.status(400).type('html').send('');
+        }
     }
 
     action(req, res, next)
