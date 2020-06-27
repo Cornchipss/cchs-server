@@ -116,21 +116,26 @@ var ui =
 
         categoryInfo.appendChild(elem('li', elem('div', 
         [
-            elem('h3', 'Page Interval (seconds)'),
-            elem('ul', elem('li', elem('input', null, 
-            {
-                min: 0,
-                max: 9999999,
-                type: 'number'
-            },
-            {
-                value: cat.interval,
-                onkeypress: (e) =>
+            elem('h3', 'Page Interval'),
+            elem('ul', elem('li', 
+            [
+                elem('input', null, 
                 {
-                    if(e.key < '0' || e.key > '9' || e.target.value.length > 6) // prevents negative #s + intervals over 3 years
-                        return e.preventDefault() && false; // an easy way of one-lining a cancelled event
-                }
-            })))
+                    min: 0,
+                    max: 9999999,
+                    type: 'number',
+                    style: "font-size: 1.0em; border: none; min-width: 160px; width: 0;"
+                },
+                {
+                    value: cat.interval,
+                    onkeypress: (e) =>
+                    {
+                        if(e.key < '0' || e.key > '9' || e.target.value.length > 6) // prevents negative #s + intervals over 3 years
+                            return e.preventDefault() && false; // an easy way of one-lining a cancelled event
+                    }
+                }),
+                elem('span', ' seconds')
+            ]))
         ])));
 
         categoryInfo.appendChild(elem('li', elem('div', 
