@@ -32,4 +32,4 @@ namespace A
         int x = 3;
     };
 }
-```
+``` 

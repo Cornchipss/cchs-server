@@ -1,4 +1,5 @@
 const Component = require('./component');
+const PlaylistManager = require('../playlist-manager');
 
 module.exports = class extends Component
 {
@@ -20,7 +21,7 @@ module.exports = class extends Component
             currentCategory: this.categoryManager.currentCategoryIndex,
             nextCategoryTime: this.categoryManager.nextCategoryTime,
             categories: this.categoryManager.categoriesData,
-            playlists: this.categoryManager.category.playlist
+            playlists: PlaylistManager.playlists
         };
     
         res.status(200).type('json').send(JSON.stringify(payload));

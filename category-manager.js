@@ -67,7 +67,7 @@ module.exports = class
     // A nice way of representing these easily for comparisons
     _encodeTime(time)
     {
-        return time[2] + 100 * (time[1] + 100 * (time[0]));
+        return time[1] + 100 * (time[0]);
     }
 
     addCategory(cat)
@@ -85,7 +85,7 @@ module.exports = class
                 cat.showTime[day].forEach(time => 
                     {
                         let split = time.split(':');
-                        times.push([ Number(split[0]), Number(split[1]), Number(split[2]) ]);
+                        times.push([ Number(split[0]), Number(split[1]) ]);
                     });
             }
 
@@ -93,7 +93,7 @@ module.exports = class
                 cat.showTime['*'].forEach(time => 
                     {
                         let split = time.split(':');
-                        times.push([ Number(split[0]), Number(split[1]), Number(split[2]) ]);
+                        times.push([ Number(split[0]), Number(split[1]) ]);
                     });
 
             let place = this.order[day];
@@ -172,7 +172,7 @@ module.exports = class
 
         let show = new Date();
         show.setDate(show.getDate() + iterations);
-        show.setHours(timeToShow[0], timeToShow[1], timeToShow[2], 0);
+        show.setHours(timeToShow[0], timeToShow[1], 0, 0);
 
         return show;
     }

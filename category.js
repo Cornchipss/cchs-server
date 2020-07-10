@@ -201,7 +201,8 @@ module.exports = class
             nextPageTime: this._nextPageTime,
             playlist: this._playlist.name,
             playlistMode: this._playlistMode,
-            showTime: this._showTime
+            showTime: this._showTime,
+            interval: this.interval
         }
     }
 }
