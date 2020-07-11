@@ -112,7 +112,7 @@ var ui = (() =>
             document.getElementById('categories').insertAdjacentElement('beforeend', 
                 elem('li', elem('button', '+', null, 
                 {
-                    classList: ['expander'],
+                    classList: ['phat-button'],
                     onclick: () =>
                     {
                         ui.addCategory(
@@ -135,24 +135,24 @@ var ui = (() =>
             [
                 elem('button', '+', null,
                 {
-                    classList: ['expander'],
-                    id: cat.name + '-expander',
+                    classList: ['phat-button'],
+                    id: cat.name + '-phat-button',
                     onclick: () =>
                     {
                         let info = document.getElementById(`info-${cat.name}`);
                         if(info.style.display === 'none')
                         {
-                            document.getElementById(`${cat.name}-expander`).innerHTML = '-';
+                            document.getElementById(`${cat.name}-phat-button`).innerHTML = '-';
                             info.style.display = 'flex';
                         }
                         else
                         {
-                            document.getElementById(`${cat.name}-expander`).innerHTML = '+';
+                            document.getElementById(`${cat.name}-phat-button`).innerHTML = '+';
                             info.style.display = 'none';
                         }
                     }
                 }), 
-                elem('input', undefined, {value: cat.name}, editNameOnly(24))
+                elem('input', undefined, {value: cat.name}, Object.assign(editNameOnly(24), {classList: ['important']}))
             ], null, {id: cat.name, classList: ['category-name']});
             
             let categoryInfo = elem('div', elem('h3', 'Pages'), null, 
@@ -192,7 +192,7 @@ var ui = (() =>
                         min: 0,
                         max: 9999999,
                         type: 'number',
-                        style: "font-size: 1.0em; border: none; min-width: 160px; width: 0;",
+                        style: "min-width: 160px; width: 0;",
                         value: cat.interval
                     },
                     {
@@ -262,7 +262,7 @@ var ui = (() =>
 
                                     elems.push(elem('li', elem('button', '+', null,
                                     {
-                                        classList: ['expander'],
+                                        classList: ['phat-button'],
                                         onclick: () =>
                                         {
                                             ui.addTimeUI(selector, cat.name);
@@ -296,28 +296,7 @@ var ui = (() =>
         addPage: (cat, page) =>
         {
             let liElem = elem('li', elem('input', undefined, {value: page}, editNameOnly(24)));
-            /*
 
-            let liElem = document.createElement('li');
-            liElem.classList.add('page')
-            liElem.innerHTML = page;
-            liElem.contentEditable = true;
-
-            liElem.onkeypress = (ev) =>
-            {
-                if(liElem.innerText.length === 30)
-                    return false;
-
-                if(ev.key === 'Enter')
-                    return false;
-
-                if(!('A' <= ev.key && ev.key <= 'Z' || 'a' <= ev.key && ev.key <= 'z' || '0' <= ev.key && ev.key <= '9' || ev.key === '-' || ev.key === '_'))
-                {
-                    return false;
-                }
-                return true;
-            }
-            */
             let parent;
 
             if(typeof cat === 'string')
@@ -333,7 +312,64 @@ var ui = (() =>
                 parent = document.getElementById(cat.name + '-ul');
             }
             parent.insertBefore(liElem, parent.childNodes[parent.childNodes.length - 1]);
-            
+        },
+
+        addPlaylist: (playlist, playlists) =>
+        {
+            if(!playlist)
+                return;
+
+            let attachTo = document.getElementById('playlists');
+
+            if(attachTo.childNodes.length === 0)
+            {
+                attachTo.appendChild(elem('li', elem('button', '+', {class: 'phat-button'}, {onclick: () =>
+                {
+                    ui.addPlaylist(prompt('Playlist Name'), playlists);
+                }})));
+            }
+
+            let playlistInfo = elem('div',
+            [ 
+                elem('h3', 'Songs'),
+                elem('ul', 
+                    (() =>
+                    {
+                        let songs = [];
+
+                        console.log(playlist);
+                        
+                        playlists[playlist].names.forEach(n =>
+                        {
+                            songs.push(elem('li', n));
+                        });
+
+                        return songs;
+                    })())
+            ], {style:'display: none'});
+            attachTo.childNodes[attachTo.childNodes.length - 1].insertAdjacentElement('beforebegin',
+                elem('li', elem('div',
+                [
+                    elem('button', '+', null,
+                    {
+                        classList: ['phat-button'],
+                        onclick: (e) =>
+                        {
+                            if(e.target.innerHTML === '+')
+                            {
+                                e.target.innerHTML = '-';
+                                playlistInfo.style.display = 'flex';
+                            }
+                            else
+                            {
+                                e.target.innerHTML = '+';
+                                playlistInfo.style.display = 'none';
+                            }
+                        }
+                    }), 
+                    elem('input', undefined, {value: playlist}, editNameOnly(24)),
+                    playlistInfo
+                ])));
         },
     };
 

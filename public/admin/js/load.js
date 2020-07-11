@@ -13,30 +13,13 @@ document.addEventListener('DOMContentLoaded', () =>
 
         ui.finalizeCategories(res.playlists);
 
-        finishLoading();
-    });
-
-    serverHandler.onChange(() =>
-    {
-        let playlistUI = document.getElementById('playlist');
-        let playlistModeUI = document.getElementById('playlist-mode');
-        playlistUI.innerHTML = serverHandler.playlist;
-        playlistModeUI.innerHTML = serverHandler.playlistMode;
-
-        let songsUI = document.getElementById('songs');
-        songsUI.innerHTML = '';
-
-        serverHandler.songNames.forEach(s =>
+        Object.keys(res.playlists).forEach(p =>
         {
-            let node = document.createElement('li');
-            node.appendChild(document.createTextNode(s));
-            songsUI.appendChild(node);
+            ui.addPlaylist(p, res.playlists);
         });
 
         finishLoading();
     });
-
-    serverHandler.start();
 
     let username = document.getElementById('username');
     username.innerHTML = cookieUtilities.getCookie('username');
@@ -50,5 +33,5 @@ function finishLoading()
 
 function save()
 {
-
+    alert('todo');
 }

@@ -1,21 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const songHandler = require('./song-handler');
 
-const FOLDER = './playlists/';
-
-module.exports =
-{
-    playlists: undefined,
-
-    save(name, songs, callback)
-    {
-        fs.writeFile(`${FOLDER}${name}.json`,
-            JSON.stringify(songs),
-            () => { if(callback) callback(); });
-    }
-}
-
-if(!module.exports.playlists)
+function loadSongs()
 {
     module.exports.playlists = {};
 
@@ -34,8 +21,46 @@ if(!module.exports.playlists)
                 if(err)
                     throw new Error(err);
                 
-                module.exports.playlists[path.parse(f).name] = JSON.parse(data);
+                let name = path.parse(f).name;
+                module.exports.playlists[name] = {};
+                module.exports.playlists[name].ids = JSON.parse(data);
+                module.exports.playlists[name].names = [];
+
+                let ids = module.exports.playlists[name].ids;
+
+                for(let i = 0; i < ids.length; i++)
+                {
+                    songHandler.getSongInfo(module.exports.playlists[name].ids[i], (err, info) =>
+                    {
+                        module.exports.playlists[name].names[i] = info.name;
+                    });
+                }
             });
         });
     });
+}
+
+const FOLDER = './playlists/';
+
+module.exports =
+{
+    playlists: undefined,
+
+    save(name, songs, callback)
+    {
+        fs.writeFile(`${FOLDER}${name}.json`,
+            JSON.stringify(songs),
+            () => 
+            { 
+                loadSongs(); // reloads the new songs into memory
+
+                if(callback) 
+                    callback(); 
+            });
+    }
+}
+
+if(!module.exports.playlists)
+{
+    loadSongs();
 }

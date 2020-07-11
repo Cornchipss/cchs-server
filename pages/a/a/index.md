@@ -18,12 +18,6 @@
 ```c++
 #include <iostream>
 
-int main()
-{
-    std::cout << "Hello World!" << std::endl;
-    delete new A::B();
-}
-
 namespace A
 {
     class B
@@ -31,5 +25,11 @@ namespace A
         public:
         int x = 3;
     };
+}
+
+int main()
+{
+    std::cout << "Hello World!" << std::endl;
+    delete new A::B();
 }
 ``` 

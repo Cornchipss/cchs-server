@@ -71,34 +71,13 @@ var serverHandler =
                 prevCategory = res.currentCategory.name;
     
                 // Different category = new playlist
-                serverHandler.songIds = res.playlist.songs;
+                serverHandler.songIds = res.playlist.songs.ids;
 
-                serverHandler.songNames = new Array(serverHandler.songIds.length);
-
-                let fin = 0;
-                for(let i = 0; i < serverHandler.songIds.length; i++)
-                {
-                    fetch('/api/songinfo?id=' + serverHandler.songIds[i])
-                    .then(res => res.text())
-                    .then(res =>
-                    {
-                        serverHandler.songNames[i] = JSON.parse(res).name;
-                        fin++;
-
-                        if(fin === serverHandler.songIds.length)
-                        {
-                            if(!onReadyCalled)
-                            {
-                                onReady.forEach(f => f());
-                                onReadyCalled = true;
-                            }
-
-                            onChanges.forEach(f => f(false));
-                        }
-                    });
-                }
+                serverHandler.songNames = res.playlist.songs.names;
 
                 serverHandler.playlistMode = res.currentCategory.playlistMode;
+
+                onReady.forEach(f => f());
             }
             else
             {

@@ -42,8 +42,8 @@ serverHandler.onReady(() =>
 
         return {id: serverHandler.songIds[index], name: serverHandler.songNames[index] };
     }
-    
-    serverHandler.onChange((sameCat) =>
+
+    function updatePage(sameCat)
     {
         let songParagraph = document.getElementById('music-title');
         songParagraph.style.transition = 'opacity ' + SONG_FADE_TIME + 's';
@@ -94,5 +94,12 @@ serverHandler.onReady(() =>
     
             songPlayer();
         }
+    }
+
+    updatePage(true);
+    
+    serverHandler.onChange((sameCat) =>
+    {
+        updatePage(sameCat);
     });
 });

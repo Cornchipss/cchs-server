@@ -5,6 +5,11 @@
     justify-content: space-around;
 }
 
+#content
+{
+    margin: 0 10%;
+}
+
 .loader
 {
     border: 16px solid #f3f3f3;
@@ -22,7 +27,7 @@
     font-size: 2rem;
 }
 
-.expander
+.phat-button
 {
     padding: 6px 8px;
     border: none;
@@ -219,7 +224,7 @@
 }
 .a
 {
-    flex: 2;
+    flex: 1;
 }
 .b
 {
@@ -253,4 +258,46 @@ h3
     font-size: 1.0em;
     font-weight: normal;
     font-style: italic;
+}
+
+.save // div
+{
+    position: fixed; 
+    bottom: 10px; 
+    right: 10px;
+
+    #save // button
+    {
+        border: none; 
+        cursor: pointer; 
+        background: transparent; 
+        transition: background-color 0.3s;
+        border-radius: 10%;
+        width: 74px;
+        height: 74px;
+
+        span img // image
+        {
+            padding-top: 4px;
+            width: 64px; height: 64px;
+        }
+
+        &:hover
+        {
+            background-color: lightgrey;
+        }
+    }
+}
+
+input, select
+{
+    font-size: 0.8em;
+
+    &.important
+    {
+        font-size: 1.0em; 
+    }
+
+    border: none;
+    width: calc(100% - 10%);
 }
