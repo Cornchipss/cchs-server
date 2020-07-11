@@ -337,16 +337,29 @@ var ui = (() =>
                     {
                         let songs = [];
 
-                        console.log(playlist);
-                        
-                        playlists[playlist].names.forEach(n =>
+                        if(playlists[playlist]) // false if this is a newly created playlist
                         {
-                            songs.push(elem('li', n));
-                        });
+                            playlists[playlist].names.forEach(n =>
+                            {
+                                songs.push(elem('li', n, {style: 'cursor: pointer;', class: 'song'}, {
+                                    onclick: (e) =>
+                                    {
+                                        alert('TODO make button to choose song/delete');
+                                    }
+                                }));
+                            });
+                        }
+
+                        songs.push(elem('li', '+', {class: 'phat-button'}, {
+                            onclick: (e) =>
+                            {
+                                alert('TODO make button to choose song');
+                            }
+                        }));
 
                         return songs;
                     })())
-            ], {style:'display: none'});
+            ], {style:'display: none;', class: 'info-div'});
             attachTo.childNodes[attachTo.childNodes.length - 1].insertAdjacentElement('beforebegin',
                 elem('li', elem('div',
                 [
@@ -369,7 +382,7 @@ var ui = (() =>
                     }), 
                     elem('input', undefined, {value: playlist}, editNameOnly(24)),
                     playlistInfo
-                ])));
+                ], {style: 'font-size: 2rem;'})));
         },
     };
 

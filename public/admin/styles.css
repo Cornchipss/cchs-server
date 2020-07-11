@@ -320,13 +320,13 @@ h3 {
   background-color: lightgrey;
 }
 
-input, select {
+input, select, .song {
   font-size: 0.8em;
   border: none;
   width: calc(100% - 10%);
 }
 
-input.important, select.important {
+input.important, select.important, .song.important {
   font-size: 1.0em;
 }
 /*# sourceMappingURL=styles.css.map */
