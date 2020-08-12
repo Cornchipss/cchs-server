@@ -8,27 +8,6 @@ document.addEventListener('DOMContentLoaded', () =>
             elem.style.borderBottom = '#048 thick solid';
     }
 
-    fetch('/api/bulk').then(res => res.json().then(res =>
-    {
-        let catsMenu = document.getElementById('category');
-        res.categories.forEach(c =>
-        {
-            let elem = document.createElement('option');
-            elem.setAttribute('value', c.name);
-            elem.appendChild(document.createTextNode(c.name));
-            catsMenu.appendChild(elem);
-        });
-
-        let elem = document.createElement('option');
-        elem.setAttribute('value', '');
-        elem.appendChild(document.createTextNode('Create Category'));
-        elem.onclick = () =>
-        {
-            window.location.href = '/admin/create-category';
-        }
-        catsMenu.appendChild(elem);
-    }));
-
     const fileUI = document.getElementById('file');
     const nameUI = document.getElementById('name');
     const catUI  = document.getElementById('category');

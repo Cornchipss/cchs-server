@@ -36,6 +36,16 @@
     font-size: 2rem;
 }
 
+.phat-button-2
+{
+    padding: 0 12px;
+    background: transparent;
+    cursor: pointer;
+    border: none;
+    border: #048 solid thin;
+    font-size: 2rem;
+}
+
 .info-div
 {
     flex-direction: column;
@@ -78,7 +88,7 @@
     }
 }
 
-#add-page-UI
+.window
 {
     position: absolute;
     top:0;
@@ -122,19 +132,23 @@
 
     .text-area
     {
+        overflow-y: scroll;
+
+        justify-content: center;
+        align-content: center;
+
         @media screen and (max-height: 900px)
         {
-            height: 80vh;
+            height: 40vh;
             margin-top: 10vh;
             margin-bottom: 10vh;
         }
 
         @media screen and (max-height: 660px)
         {
-            height: 100vh;
+            height: 69vh;
             margin-top: 0;
             margin-bottom: 0;
-            
         }
 
         @media screen and (max-height: 400px)
@@ -143,11 +157,10 @@
             height: 100vh;
             margin-top: 0;
             margin-bottom: 0;
-            
         }
 
         width: 60vw;
-        height: 60vh;
+        height: 40vh;
         margin: 20vh 20vw; // Percentages account for the whole page's width, not the parent
 
         background-color: white;

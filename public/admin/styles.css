@@ -38,6 +38,15 @@
   font-size: 2rem;
 }
 
+.phat-button-2 {
+  padding: 0 12px;
+  background: transparent;
+  cursor: pointer;
+  border: none;
+  border: #048 solid thin;
+  font-size: 2rem;
+}
+
 .info-div {
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -78,7 +87,7 @@
   outline: #048 thin solid;
 }
 
-#add-page-UI {
+.window {
   position: absolute;
   top: 0;
   left: 0;
@@ -87,19 +96,19 @@
   background-color: rgba(0, 0, 0, 0.3);
 }
 
-#add-page-UI .title-bar {
+.window .title-bar {
   background-color: #048;
   color: white;
 }
 
-#add-page-UI .title-bar .title {
+.window .title-bar .title {
   display: inline-block;
   font-size: 2.3em;
   margin-left: 10px;
   height: 100%;
 }
 
-#add-page-UI .title-bar .close {
+.window .title-bar .close {
   float: right;
   border: none;
   background-color: lightgrey;
@@ -110,14 +119,20 @@
   cursor: pointer;
 }
 
-#add-page-UI .title-bar .close:hover {
+.window .title-bar .close:hover {
   color: white;
   background-color: red;
 }
 
-#add-page-UI .text-area {
+.window .text-area {
+  overflow-y: scroll;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-line-pack: center;
+      align-content: center;
   width: 60vw;
-  height: 60vh;
+  height: 40vh;
   margin: 20vh 20vw;
   background-color: white;
   position: relative;
@@ -131,23 +146,23 @@
 }
 
 @media screen and (max-height: 900px) {
-  #add-page-UI .text-area {
-    height: 80vh;
+  .window .text-area {
+    height: 40vh;
     margin-top: 10vh;
     margin-bottom: 10vh;
   }
 }
 
 @media screen and (max-height: 660px) {
-  #add-page-UI .text-area {
-    height: 100vh;
+  .window .text-area {
+    height: 69vh;
     margin-top: 0;
     margin-bottom: 0;
   }
 }
 
 @media screen and (max-height: 400px) {
-  #add-page-UI .text-area {
+  .window .text-area {
     font-size: 0.5em;
     height: 100vh;
     margin-top: 0;
@@ -155,7 +170,7 @@
   }
 }
 
-#add-page-UI .text-area form {
+.window .text-area form {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
@@ -172,17 +187,17 @@
   margin: 0 10%;
 }
 
-#add-page-UI .text-area label {
+.window .text-area label {
   font-size: 1.2em;
   margin-top: 10px;
 }
 
-#add-page-UI .text-area .group {
+.window .text-area .group {
   padding-top: 10px;
   width: 100%;
 }
 
-#add-page-UI .text-area input, #add-page-UI .text-area select {
+.window .text-area input, .window .text-area select {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   width: 100%;
@@ -194,11 +209,11 @@
   border-bottom: thick #048 solid;
 }
 
-#add-page-UI .text-area input[type=file] {
+.window .text-area input[type=file] {
   border: none;
 }
 
-#add-page-UI .text-area input[type=submit] {
+.window .text-area input[type=submit] {
   background-color: #048;
   color: white;
   cursor: pointer;

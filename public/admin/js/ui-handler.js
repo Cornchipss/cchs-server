@@ -10,24 +10,6 @@ var ui = (() =>
     function elem(elemName, child, attribs, modifications)
     {
         let elem = document.createElement(elemName);
-        if(child)
-        {
-            if(child instanceof Array)
-            {
-                child.forEach(c =>
-                {
-                    if(typeof c === 'string')
-                        c = document.createTextNode(child);
-                    elem.appendChild(c);
-                });
-            }
-            else
-            {
-                if(typeof child === 'string')
-                    child = document.createTextNode(child);
-                elem.appendChild(child);
-            }
-        }
 
         if(attribs)
         {
@@ -51,7 +33,48 @@ var ui = (() =>
             });
         }
 
+        if(child instanceof Function)
+            child = child();
+
+        if(child)
+        {
+            if(child instanceof Array)
+            {
+                child.forEach(c =>
+                {
+                    if(typeof c === 'string')
+                        c = document.createTextNode(child);
+                    elem.appendChild(c);
+                });
+            }
+            else
+            {
+                if(typeof child === 'string')
+                    child = document.createTextNode(child);
+
+                elem.appendChild(child);
+            }
+        }
+
         return elem;
+    }
+
+    function checkName(name, maxNo)
+    {
+        if(name.trim().length === 0)
+            return false;
+
+        for(let i = 0; i < name.length; i++)
+        {
+            let c = name.charAt(i);
+            if(!((c >= 'a' && c <= 'z') || 
+                (c >= 'A' && c <= 'Z') || 
+                (c >= '0' && c <= '9') ||
+                (c === '-' || c === '_')))
+                return false;
+        }
+
+        return name.length <= maxNo;
     }
 
     function editNameOnly(maxNo)
@@ -115,8 +138,18 @@ var ui = (() =>
                     classList: ['phat-button'],
                     onclick: () =>
                     {
+                        let name= '';
+                        
+                        while(!checkName(name, 24))
+                        {
+                            name = prompt('Category Name');
+
+                            if(!name)
+                                return; // Cancel was pressed
+                        }
+
                         ui.addCategory(
-                            { name: 'new-category',
+                            { name: name,
                                 currentPage: 0,
                                 playlist: undefined,
                                 playlistMode: 'shuffle',
@@ -248,7 +281,7 @@ var ui = (() =>
                             elems.push(elem('li', elem('div', 
                             [
                                 elem('h4', days[i]),
-                                elem('ul', (() =>
+                                elem('ul', () =>
                                 {
                                     let elems = [];
                                     
@@ -256,7 +289,7 @@ var ui = (() =>
                                     {
                                         cat.showTime[selector].forEach(item =>
                                         {
-                                            elems.push(elem('li', elem('span', [elem('input', undefined, {value: item, type:'time'}), elem('button', '-')])))
+                                            ui.addTimeUI(elems, item);
                                         });
                                     }
 
@@ -270,12 +303,12 @@ var ui = (() =>
                                     })));
 
                                     return elems;
-                                })())
+                                }, {id: `${cat.name}-${selector}-day`})
                             ])));
                         }
 
                         return elems;
-                    })()
+                    })
                 )
             ])));
             
@@ -290,6 +323,33 @@ var ui = (() =>
             else
             {
                 document.getElementById('categories').appendChild(elem('li', container));
+            }
+        },
+
+        addTimeUI: (selector, catName, value) =>
+        {
+            let arr = selector instanceof Array;
+
+            let elemToAdd = 
+                elem('li', 
+                    elem('span', 
+                        elem('input', undefined, {value: arr ? catName : value, type:'time'}), 
+                    )
+                );
+
+            elemToAdd.appendChild(elem('button', '-', {class: 'phat-button-2'}, {onclick: () =>
+            {
+                elemToAdd.parentNode.removeChild(elemToAdd);
+            }}));
+
+            if(arr)
+            {
+                selector.push(elemToAdd);
+            }
+            else
+            {
+                let addTo = document.getElementById(`${catName}-${selector}-day`);
+                addTo.insertBefore(elemToAdd, addTo.childNodes[addTo.childNodes.length - 1]);
             }
         },
 
