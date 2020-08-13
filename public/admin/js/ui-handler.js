@@ -1,3 +1,6 @@
+// A note to my future self.
+// Don't make another webapp without a framework again.
+
 var ui = (() =>
 {
     /**
@@ -115,6 +118,7 @@ var ui = (() =>
     let ui = 
     {
         _finalized: false,
+        _appendSongTo: undefined,
 
         addPageUI: (catName) =>
         {
@@ -326,6 +330,55 @@ var ui = (() =>
             }
         },
 
+        addSong: (ulElement, n, ytid) =>
+        {
+            let liElemento = elem('li', n, {style: 'cursor: pointer;', class: 'song', ytid: ytid});
+            liElemento.onclick = () =>
+            {
+                ui.addSongUI(ulElement, liElemento);
+            };
+            
+            ulElement.insertBefore(liElemento, ulElement.childNodes[ulElement.childNodes.length - 1]);
+        },
+
+        addSongUI: (list, song) =>
+        {
+            if(song)
+            {
+                document.getElementById('remove-vid').style.display = 'block';
+                document.getElementById('add-vid').style.display = 'none';
+                document.getElementById('youtube-part').style.display = 'none';
+                document.getElementById('find-vid').style.display = 'none';
+                document.getElementById('youtube-id').required = false;
+                document.getElementById('song-name').innerHTML = song.innerHTML;
+
+                ui._appendSongTo = song;
+            }
+            else
+            {
+                // Inefficient? Yes. Care? No.
+                document.getElementById('remove-vid').style.display = 'none';
+                document.getElementById('find-vid').style.display = 'block';
+                document.getElementById('add-vid').style.display = 'none';
+                document.getElementById('song-name').style.display = 'none';
+                document.getElementById('youtube-id').required = true;
+                document.getElementById('youtube-id').value = '';
+                document.getElementById('youtube-id').style.display = 'block';
+                document.getElementById('youtube-part').style.display = 'block';
+
+                ui._appendSongTo = list;
+            }
+
+            document.getElementById('add-song-UI').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        },
+
+        addSongUIClose: () =>
+        {
+            document.getElementById('add-song-UI').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        },
+
         addTimeUI: (selector, catName, value) =>
         {
             let arr = selector instanceof Array;
@@ -389,37 +442,28 @@ var ui = (() =>
                 }})));
             }
 
-            let playlistInfo = elem('div',
-            [ 
-                elem('h3', 'Songs'),
-                elem('ul', 
-                    (() =>
-                    {
-                        let songs = [];
+            let unorderedList = elem('ul');
 
-                        if(playlists[playlist]) // false if this is a newly created playlist
-                        {
-                            playlists[playlist].names.forEach(n =>
-                            {
-                                songs.push(elem('li', n, {style: 'cursor: pointer;', class: 'song'}, {
-                                    onclick: (e) =>
-                                    {
-                                        alert('TODO make button to choose song/delete');
-                                    }
-                                }));
-                            });
-                        }
+            unorderedList.appendChild(elem('li', '+', {class: 'phat-button'}, {
+                onclick: (e) =>
+                {
+                    ui.addSongUI(unorderedList);
+                }
+            }));
 
-                        songs.push(elem('li', '+', {class: 'phat-button'}, {
-                            onclick: (e) =>
-                            {
-                                alert('TODO make button to choose song');
-                            }
-                        }));
+            if(playlists[playlist]) // false if this is a newly created playlist
+            {
+                let pl = playlists[playlist];
+                console.log(pl);
+                for(let i = 0; i < pl.names.length; i++)
+                {
+                    ui.addSong(unorderedList, pl.names[i], pl.ids[i]);
+                }
+            }
 
-                        return songs;
-                    })())
-            ], {style:'display: none;', class: 'info-div'});
+            
+
+            let playlistInfo = elem('ul', unorderedList, {style:'display: none;', class: 'info-div'});
             attachTo.childNodes[attachTo.childNodes.length - 1].insertAdjacentElement('beforebegin',
                 elem('li', elem('div',
                 [

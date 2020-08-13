@@ -90,7 +90,7 @@
 
 .window
 {
-    position: absolute;
+    position: fixed;
     top:0;
     left:0;
     width: 100%;
@@ -118,8 +118,9 @@
             color: black;
             font-size: 2.3em;
 
-            height: 1.2em; // This works??? yep.
-            width: 1.2em; // Sets the button relative to the font
+            // Sets the dimensions button relative to the font
+            height: 1.2em;
+            width: 1.2em;
             
             cursor: pointer;
             &:hover
@@ -132,10 +133,14 @@
 
     .text-area
     {
-        overflow-y: scroll;
-
         justify-content: center;
         align-content: center;
+
+        p
+        {
+            font-size: 2.2em;
+            margin: 10px 0;
+        }
 
         @media screen and (max-height: 900px)
         {

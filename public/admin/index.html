@@ -53,19 +53,20 @@
             </div>
         </div>
 
-        <div id="add-song-UI" class="window" style="display: e">
+        <div id="add-song-UI" class="window" style="display: none">
             <div class="text-area">
                 <div class="title-bar">
-                    <span class="title">Song</span> <button class="close" onclick="ui.addPageUIClose()">&times;</button>
+                    <span class="title">Song</span> <button class="close" onclick="ui.addSongUIClose()">&times;</button>
                 </div>
-                <form id="form" action="admin/api/page" enctype="multipart/form-data" method="POST">
-                    <label for="id">YouTube ID</label>
-                    <input id="id" type="text" name="id" autocomplete="off" required>
-                    <div>
-                        <img style="width:356px;height:200px;" src="data:image/svg+xml;utf8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PGcgZGF0YS1uYW1lPSJMYXllciAyIj48ZyBkYXRhLW5hbWU9InF1ZXN0aW9uLW1hcmsiPjxyZWN0IHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgb3BhY2l0eT0iMCIgdHJhbnNmb3JtPSJyb3RhdGUoMTgwIDEyIDEyKSIvPjxwYXRoIGQ9Ik0xNyA5QTUgNSAwIDAgMCA3IDlhMSAxIDAgMCAwIDIgMCAzIDMgMCAxIDEgMyAzIDEgMSAwIDAgMC0xIDF2MmExIDEgMCAwIDAgMiAwdi0xLjFBNSA1IDAgMCAwIDE3IDl6Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxOSIgcj0iMSIvPjwvZz48L2c+PC9zdmc+" alt="" id="thumbnail" />
-                        <p class="youtube-name">ur mom video xd</p>
-                    </div>
-                    <input type="submit" value="Add Page">
+                <form id="video-form" action="admin/api/page" enctype="multipart/form-data" method="POST">
+                    <section id="youtube-part">
+                        <label for="youtube-id">YouTube ID</label>
+                        <input id="youtube-id" type="text" name="youtube-id" autocomplete="off" required>
+                    </section>
+                    <p id="song-name" class="youtube-name">ur mom video xd</p>
+                    <input type="submit" id="find-vid" value="Find Song">
+                    <input type="submit" id="add-vid" value="Add Song">
+                    <input type="submit" id="remove-vid" value="Remove Song">
                 </form>
             </div>
         </div>

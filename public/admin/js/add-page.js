@@ -33,14 +33,61 @@ document.addEventListener('DOMContentLoaded', () =>
         err(nameUI, undefined);
     }
 
-    document.getElementById('form').onsubmit = (e) =>
+    document.getElementById('add-song-UI').onsubmit = (e) =>
+    {
+        e.preventDefault();
+
+        if(e.submitter.id === 'find-vid')
+        {
+            let val = document.getElementById('youtube-id').value.trim();
+            
+            if(val.length === 'dQw4w9WgXcQ'.length)
+            {
+                fetch(`/api/songinfo?id=${val}`).then(res =>
+                {
+                    if(res.status === 200)
+                    {
+                        res.json().then(res =>
+                        {
+                            e.submitter.style.display = 'none';
+                            document.getElementById('add-vid').style.display = 'block';
+                            document.getElementById('song-name').innerHTML = res.name;
+                            document.getElementById('song-name').style.display = 'block';
+                            document.getElementById('youtube-id').style.display = 'none';
+                        });
+                    }
+                    else
+                    {
+                        alert('A song with the ID of ' + val + ' was not found!');
+                    }
+                });
+            }
+            else
+                alert('Invalid youtube ID format.');
+        }
+        else if(e.submitter.id === 'add-vid')
+        {
+            ui.addSong(ui._appendSongTo, document.getElementById('song-name').innerHTML, document.getElementById('youtube-id').value);
+            ui.addSongUIClose();
+        }
+        else // remove-vid
+        {
+            ui._appendSongTo.parentElement.removeChild(ui._appendSongTo);
+            ui.addSongUIClose();
+        }
+
+
+        return false;
+    }
+
+    document.getElementById('add-page-UI').onsubmit = (e) =>
     {
         let file, name, category;
         file = fileUI.value;
         name = nameUI.value;
         category = catUI.value;
 
-        if(name.length > 30)
+        if(name.length > 24)
         {
             err(nameUI, 'The name\'s length cannot be over 30 characters.');
             return false;
@@ -96,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () =>
                 alert(res.error);
         });
 
+        e.preventDefault();
         return false;
     }
 });
