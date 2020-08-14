@@ -2,6 +2,7 @@
 
 const bodyParser = require('body-parser');
 const express = require('express');
+const path = require('path');
 
 const DEBUG = require('./DEBUG');
 
@@ -110,12 +111,12 @@ app.use('/api', (req, res) =>
 });
 
 // If this wasnt an api call send them the webpage they requested
-app.use('/', express.static(__dirname + '/public', {index: 'index.html'}));
+app.use('/', express.static(path.join(__dirname, '/public'), {index: 'index.html'}));
 
 // Last call if page not found - shows a 404 error
 app.use((req, res, next) =>
 {
-    res.status(404).sendFile(__dirname + '/public/404.html');
+    res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
 app.listen(port, () => 

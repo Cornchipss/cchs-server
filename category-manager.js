@@ -1,8 +1,9 @@
 const fs = require('fs');
 const Category = require('./category');
 const rimraf = require('rimraf');
+const path = require('path');
 
-const CATEGORY_PATH = __dirname + '/pages/';
+const CATEGORY_PATH = path.join(__dirname, 'pages/');
 
 module.exports = class
 {
@@ -138,7 +139,7 @@ module.exports = class
 
     removeCategory(cat)
     {
-        rimraf(CATEGORY_PATH + cat, () => {});
+        rimraf(path.join(CATEGORY_PATH, cat), () => {});
     }
 
     reinit()
@@ -220,6 +221,8 @@ module.exports = class
             }
             else
             {
+                // todo: make better
+
                 let done = 0;
                 let todo = 0;
 
@@ -227,7 +230,7 @@ module.exports = class
                 {
                     todo++;
 
-                    fs.stat(CATEGORY_PATH + f, (err, stats) => // Used to see if the file is a directory
+                    fs.stat(path.join(CATEGORY_PATH, f), (err, stats) => // Used to see if the file is a directory
                     {
                         if(err)
                             throw new Error(err);

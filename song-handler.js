@@ -6,7 +6,9 @@ const youtube = new (require('simple-youtube-api'))(youtubeApi);
 
 const {ffmpegPath} = require('./system-config.json');
 
-const SONGS_DIR = __dirname + '\\songs\\';
+const path = require('path');
+
+const SONGS_DIR = path.join(__dirname, './songs');
 
 // https://www.npmjs.com/package/youtube-mp3-downloader
 const mp3Downloader = new (require('youtube-mp3-downloader'))(
@@ -89,7 +91,7 @@ module.exports =
     {
         if(id)
         {
-            fs.readFile(SONGS_DIR + id + '\\details.json', {encoding: 'utf8'}, (err, res) =>
+            fs.readFile(path.join(SONGS_DIR, id, 'details.json'), {encoding: 'utf8'}, (err, res) =>
             {
                 if(err)
                 {
@@ -190,10 +192,11 @@ module.exports =
 
     songExistsId: (id, callback) =>
     {
-        fs.stat(SONGS_DIR + id + '/song.mp3', err =>
+        let pth = path.join(SONGS_DIR, id, 'song.mp3');
+        fs.stat(pth, err =>
         {
             if(!err)
-                callback(SONGS_DIR + id + '/song.mp3');
+                callback(pth);
             else
             {
                 callback(undefined);
@@ -214,12 +217,13 @@ module.exports =
 
         dirs.forEach(dir =>
         {
-            if(fs.existsSync(dir + '/details.json'))
+            let pth = path.join(dir, 'details.json');
+            if(fs.existsSync(pth))
             {
-                let data = fs.readFileSync(dir + '/details.json', {encoding: 'utf8'})
+                let data = fs.readFileSync(pth, {encoding: 'utf8'})
                 if(JSON.parse(data).name === name)
                 {
-                    callback(dir + '/song.mp3');
+                    callback(path.join(dir, 'song.mp3'));
                     found = true;
                     return;
                 }
@@ -255,7 +259,7 @@ function handleQue()
 
     que[0].callback = callbacks;
 
-    let dir = `${SONGS_DIR}${que[0].id}/`;
+    let dir = path.join(SONGS_DIR, que[0].id);
 
     rimraf(dir, () => // removes any failed attempt(s) to download this song
     {
@@ -280,11 +284,11 @@ mp3Downloader.on('finished', (err, data) =>
     }
     else
     {
-        let newDir = SONGS_DIR + '/' + current.id + '/';
-        let newFile = newDir + 'song.mp3';
+        let newDir = path.join(SONGS_DIR, current.id);
+        let newFile = path.join(newDir, 'song.mp3');
         fs.rename(data.file, newFile, () =>
         {
-            fs.writeFile(newDir + 'details.json', JSON.stringify({name: current.title}), () =>
+            fs.writeFile(path.join(newDir, 'details.json'), JSON.stringify({name: current.title}), () =>
             {
                 current.callback.forEach(callback =>
                 {

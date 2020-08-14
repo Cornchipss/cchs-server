@@ -2,6 +2,7 @@ const fs = require('fs');
 const rimraf = require('rimraf');
 
 const Playlist = require('./playlist');
+const path = require('path');
 
 module.exports = class
 {
@@ -58,13 +59,13 @@ module.exports = class
 
                 files.forEach(f =>
                 {
-                    if(fs.statSync(this.path + f).isDirectory()) // making this sync would be very hard, more trouble than it's worth.
+                    if(fs.statSync(path.join(this.path, f)).isDirectory()) // making this sync would be very hard, more trouble than it's worth.
                         this._pages.push(f);
                 });
 
                 if(exists) // if it exists there is a config file to read from
                 {
-                    fs.readFile(this.path + 'settings.json', (err, data) =>
+                    fs.readFile(path.join(this.path, 'settings.json'), (err, data) =>
                     {
                         if(err)
                         {
@@ -109,8 +110,9 @@ module.exports = class
 
     addPage(name, file, order, callback)
     {
-        let path = `${this.path}/${name}/index.md`;
-        fs.mkdir(path.substr(0, path.lastIndexOf('/')), {recursive: true}, err =>
+        let pth = path.join(this.path, name, `index.md`);
+
+        fs.mkdir(pth.substr(0, pth.lastIndexOf(path.sep)), {recursive: true}, err =>
         {
             if(err)
             {
@@ -119,7 +121,7 @@ module.exports = class
                 return;
             }
             
-            fs.rename(file.path, path, err =>
+            fs.rename(file.path, pth, err =>
             {
                 if(err)
                 {
@@ -166,7 +168,7 @@ module.exports = class
 
     save(callback)
     {
-        fs.writeFile(this.path + 'settings.json', JSON.stringify({
+        fs.writeFile(path.join(this.path, 'settings.json'), JSON.stringify({
             interval: this.interval,
             showTime: this.showTime,
             mode: this.playlistMode,
@@ -178,7 +180,7 @@ module.exports = class
         });
     }
 
-    get path() { return `${__dirname}/pages/${this.name}/`; }
+    get path() { return path.join(__dirname, 'pages', this.name); }
 
     get showTime() { return this._showTime; }
     set showTime(s) { this._showTime = s; }
@@ -216,7 +218,7 @@ module.exports = class
 
     renamePage(oldName, newName)
     {
-        fs.renameSync(`${this.path}${oldName}`, `${this.path}${newName}`);
+        fs.renameSync(path.join(this.path, oldName), path.join(this.path, newName));
     }
     removePage(name)
     {
@@ -227,7 +229,7 @@ module.exports = class
                 this.pages.splice(i, 1);
             }
         }
-        rimraf(`${this.path}${name}`, () => {});
+        rimraf(path.join(this.path, name), () => {});
     }
 
     get playlist() { return this._playlist; }
