@@ -22,7 +22,10 @@ module.exports = class
 
     get names()
     {
-        return this.playlistManager.playlists[this.name].names;
+        if(this.playlistManager.playlists[this.name])
+            return this.playlistManager.playlists[this.name].names;
+        else
+            return [];
     }
 
     get ids()
@@ -32,7 +35,10 @@ module.exports = class
 
     get songs()
     {
-        return this.playlistManager.playlists[this.name].ids;
+        if(this.playlistManager.playlists[this.name])
+            return this.playlistManager.playlists[this.name].ids;
+        else
+            return [];
     }
 
     /**
