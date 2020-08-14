@@ -33,14 +33,19 @@ serverHandler.onReady(() =>
     
     function nextSong()
     {
-        if(songOrder.length === 0)
+        if(serverHandler.songIds.length !== 0)
         {
-            reorderSongs(songs.length, serverHandler.playlistMode);
-        }
-        
-        let index = songOrder.pop();
+            if(songOrder.length === 0)
+            {
+                reorderSongs(serverHandler.songIds.length, serverHandler.playlistMode);
+            }
+            
+            let index = songOrder.pop();
 
-        return {id: serverHandler.songIds[index], name: serverHandler.songNames[index] };
+            return {id: serverHandler.songIds[index], name: serverHandler.songNames[index] };
+        }
+        else
+            return {id: undefined, name: undefined};
     }
 
     function updatePage(sameCat)
@@ -63,33 +68,36 @@ serverHandler.onReady(() =>
             function songPlayer()
             {
                 let song = nextSong();
-    
-                let ctx = new AudioContext();
+                
+                if(song.id !== undefined)
+                {
+                    let ctx = new AudioContext();
 
-                fetch('/api/song?id=' + song.id)
-                    .then(data => data.arrayBuffer())
-                    .then(buffer => ctx.decodeAudioData(buffer))
-                    .then(audioData =>
-                    {
-                        let playsound = ctx.createBufferSource();
-                        playsound.buffer = audioData;
-                        playsound.connect(ctx.destination);
-                        playsound.start(ctx.currentTime);
-                        playsound.addEventListener('ended', (e) =>
+                    fetch('/api/song?id=' + song.id)
+                        .then(data => data.arrayBuffer())
+                        .then(buffer => ctx.decodeAudioData(buffer))
+                        .then(audioData =>
                         {
-                            playsound.disconnect();
-                            ctx.close();
-                            
-                            songPlayer();
+                            let playsound = ctx.createBufferSource();
+                            playsound.buffer = audioData;
+                            playsound.connect(ctx.destination);
+                            playsound.start(ctx.currentTime);
+                            playsound.addEventListener('ended', (e) =>
+                            {
+                                playsound.disconnect();
+                                ctx.close();
+                                
+                                songPlayer();
+                            });
+
+                            songParagraph.innerHTML = song.name;
+                            songParagraph.style.opacity = 1;
+                            setTimeout(() =>
+                            {
+                                songParagraph.style.opacity = 0;
+                            }, SONG_FADE_TIME * 1000 + SONG_NOTIFICATION_TIME * 1000);    
                         });
-
-                        songParagraph.innerHTML = song.name;
-                        songParagraph.style.opacity = 1;
-                        setTimeout(() =>
-                        {
-                            songParagraph.style.opacity = 0;
-                        }, SONG_FADE_TIME * 1000 + SONG_NOTIFICATION_TIME * 1000);    
-                    });
+                }
             }
     
             songPlayer();

@@ -8,12 +8,31 @@ module.exports = class
      */
     constructor(name, playlistManager)
     {
-        this.name = name;
-        this.songs = [];
+        if(typeof name !== 'string')
+        {
+            this.name = name.name;
+        }
+        else
+        {
+            this.name = name;
+        }
 
         this.playlistManager = playlistManager;
+    }
 
-        this.songs = this.playlistManager.playlists[name];
+    get names()
+    {
+        return this.playlistManager.playlists[this.name].names;
+    }
+
+    get ids()
+    {
+        return this.songs;
+    }
+
+    get songs()
+    {
+        return this.playlistManager.playlists[this.name].ids;
     }
 
     /**

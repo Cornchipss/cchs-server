@@ -45,9 +45,12 @@ var ui = (() =>
             {
                 child.forEach(c =>
                 {
-                    if(typeof c === 'string')
-                        c = document.createTextNode(child);
-                    elem.appendChild(c);
+                    if(c !== undefined)
+                    {
+                        if(typeof c === 'string')
+                            c = document.createTextNode(child);
+                        elem.appendChild(c);
+                    }
                 });
             }
             else
@@ -225,8 +228,6 @@ var ui = (() =>
             });
             categoryInfo.appendChild(pagesList);
 
-            console.log(cat);
-
             categoryInfo.appendChild(elem('li', elem('div', 
             [
                 elem('h3', 'Page Interval'),
@@ -363,9 +364,6 @@ var ui = (() =>
             let node = parent.removeChild(elem);
             let playlist = ui._playlists[parent.parentNode.parentNode.childNodes[1].innerHTML];
             
-            console.log(playlist);
-            console.log(node);
-
             for(let i = 0; i < playlist.ids.length; i++)
             {
                 if(playlist.ids[i] === node.getAttribute('ytid'))
@@ -373,6 +371,16 @@ var ui = (() =>
                     playlist.ids.splice(i, 1);
                     playlist.names.splice(i, 1);
                 }
+            }
+        },
+
+        removePlaylist(playlistLi)
+        {
+            let name = playlistLi.childNodes[0].childNodes[1].innerHTML;
+            if(name !== 'default')
+            {
+                playlistLi.parentNode.removeChild(playlistLi);
+                ui._playlists[name] = undefined;
             }
         },
 
@@ -581,29 +589,36 @@ var ui = (() =>
             }
 
             let playlistInfo = elem('div', unorderedList, {style:'display: none;', class: 'info-div'});
-            attachTo.childNodes[attachTo.childNodes.length - 1].insertAdjacentElement('beforebegin',
-                elem('li', elem('div',
-                [
-                    elem('button', '+', null,
+
+            let playlistLi = elem('li', elem('div',
+            [
+                elem('button', '+', null,
+                {
+                    classList: ['phat-button'],
+                    onclick: (e) =>
                     {
-                        classList: ['phat-button'],
-                        onclick: (e) =>
+                        if(e.target.innerHTML === '+')
                         {
-                            if(e.target.innerHTML === '+')
-                            {
-                                e.target.innerHTML = '-';
-                                playlistInfo.style.display = 'flex';
-                            }
-                            else
-                            {
-                                e.target.innerHTML = '+';
-                                playlistInfo.style.display = 'none';
-                            }
+                            e.target.innerHTML = '-';
+                            playlistInfo.style.display = 'flex';
                         }
-                    }), 
-                    elem('span', playlist),
-                    playlistInfo
-                ], {style: 'font-size: 2rem;'})));
+                        else
+                        {
+                            e.target.innerHTML = '+';
+                            playlistInfo.style.display = 'none';
+                        }
+                    }
+                }), 
+                elem('span', playlist),
+                playlist !== 'default' ? elem('button', '-', {style: 'margin-left: 20px', class: 'phat-button-2'}, {onclick: () =>
+                {
+                    ui.removePlaylist(playlistLi);
+                }}) : undefined,
+                playlistInfo
+            ], {style: 'font-size: 2rem;'}));
+
+            attachTo.childNodes[attachTo.childNodes.length - 1].insertAdjacentElement('beforebegin', playlistLi);
+                
         },
     };
 

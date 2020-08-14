@@ -21,8 +21,6 @@ module.exports = class extends Component
 
         let data = req.body;
 
-        console.log(data);
-
         let addLeftoverCats = () =>
         {
             let started = 0;

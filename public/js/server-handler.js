@@ -71,9 +71,9 @@ var serverHandler =
                 prevCategory = res.currentCategory.name;
     
                 // Different category = new playlist
-                serverHandler.songIds = res.playlist.songs.ids;
+                serverHandler.songIds = res.playlist.ids;
 
-                serverHandler.songNames = res.playlist.songs.names;
+                serverHandler.songNames = res.playlist.songs;
 
                 serverHandler.playlistMode = res.currentCategory.playlistMode;
 

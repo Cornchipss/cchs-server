@@ -231,7 +231,12 @@ module.exports = class
     }
 
     get playlist() { return this._playlist; }
-    set playlist(p) { this._playlist = p; }
+    set playlist(p) 
+    {
+        if(typeof p === 'string')
+            p = new Playlist(p, this._playlist.playlistManager);
+        this._playlist = p; 
+    }
 
     get requestData()
     {

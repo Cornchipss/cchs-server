@@ -1,4 +1,5 @@
 const fs = require('fs');
+const rimraf = require('rimraf');
 
 const { youtubeApi } = require('./secret/credentials.json');
 const youtube = new (require('simple-youtube-api'))(youtubeApi);
@@ -256,10 +257,12 @@ function handleQue()
 
     let dir = `${SONGS_DIR}${que[0].id}/`;
 
-    if(!fs.existsSync(dir))
+    rimraf(dir, () => // removes any failed attempt(s) to download this song
+    {
         fs.mkdirSync(dir);
-    
-    mp3Downloader.download(que[0].id, que[0].id + '.mp3');
+          
+        mp3Downloader.download(que[0].id, que[0].id + '.mp3');
+    });
 }
 
 mp3Downloader.on('finished', (err, data) =>

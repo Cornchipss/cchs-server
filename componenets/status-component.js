@@ -18,7 +18,10 @@ module.exports = class extends Component
         let payload =
         {
             currentCategory: this.categoryManager.category.requestData,
-            playlist: { name: this.categoryManager.category.playlist.name, songs: this.categoryManager.category.playlist.songs, ids: this.categoryManager.category.playlist.ids },
+            playlist: { 
+                name: this.categoryManager.category.playlist.name, 
+                songs: this.categoryManager.category.playlist.names, 
+                ids: this.categoryManager.category.playlist.ids },
             nextCategoryTime: this.categoryManager.nextCategoryTime
         };
     

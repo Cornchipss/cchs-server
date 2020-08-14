@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const songHandler = require('./song-handler');
+const rimraf = require('rimraf');
 
 const FOLDER = './playlists/';
 
@@ -64,9 +65,18 @@ module.exports = class
 
     saveAll()
     {
-        Object.keys(this.playlists).forEach(p =>
+        if(!this.playlists['default'])
+            this.playlists['default'] = {ids:[], names:[]};
+
+        rimraf(FOLDER, () =>
         {
-            this.save(p, this.playlists[p].ids);
+            fs.mkdir(FOLDER, () =>
+            {
+                Object.keys(this.playlists).forEach(p =>
+                {
+                    this.save(p, this.playlists[p].ids);
+                });
+            })
         });
     }
 }
