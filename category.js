@@ -8,6 +8,7 @@ module.exports = class
     constructor(name, playlistManager, callback)
     {
         this._name = name;
+        this._playlist = undefined;
         this.init(name, callback, playlistManager);
     }
 
@@ -95,13 +96,8 @@ module.exports = class
                     this._nextPageTime = Date.now() + 30000;
                     
                     this._playlist = new Playlist('default', playlistManager);
-                    this._showTime =
-                    [
-                        {
-                            days: [ 0, 1, 2, 3, 4, 5, 6 ],
-                            times: [ "00:00:00" ]
-                        }
-                    ];
+                    this._playlistMode = 'shuffle';
+                    this._showTime = {};
                     
                     this.save();
                     if(callback)
@@ -174,7 +170,7 @@ module.exports = class
             interval: this.interval,
             showTime: this.showTime,
             mode: this.playlistMode,
-            playlist: this.playlist.name
+            playlist: this.playlist
         }), 
         () => 
         {

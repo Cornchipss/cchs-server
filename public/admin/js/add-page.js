@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () =>
             let tempInput = document.createElement('input');
             tempInput.name = 'category';
             tempInput.value = category;
+            tempInput.style.display = 'none';
             form.appendChild(tempInput); // a quick and dirty method of adding the category to the form
             // This ^^^ is horrible. Please learn from my mistakes.
 

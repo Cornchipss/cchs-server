@@ -215,7 +215,8 @@ module.exports = class
             if(files.length === 0)
             {
                 // No cats to load :)
-                callback();
+                if(callback)
+                    callback();
             }
             else
             {

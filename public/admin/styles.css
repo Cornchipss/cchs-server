@@ -312,6 +312,34 @@ h3 {
   font-style: italic;
 }
 
+.write {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+}
+
+.write a {
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  -webkit-transition: background-color 0.3s;
+  transition: background-color 0.3s;
+  border-radius: 10%;
+  width: 74px;
+  height: 74px;
+  display: block;
+}
+
+.write a img {
+  width: 64px;
+  height: 64px;
+  padding: 5px;
+}
+
+.write a:hover {
+  background-color: lightgrey;
+}
+
 .save {
   position: fixed;
   bottom: 10px;

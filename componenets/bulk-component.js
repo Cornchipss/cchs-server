@@ -21,8 +21,6 @@ module.exports = class extends Component
 
         let data = req.body;
 
-        console.log(data.categories[0].showTime);
-
         let addLeftoverCats = () =>
         {
             let started = 0;
@@ -81,7 +79,7 @@ module.exports = class extends Component
 
                         if(processing === 0)
                         {
-                            this.categoryManager.reinit();
+                            //this.categoryManager.reinit();
                             addLeftoverCats();
                         }
                     });
@@ -99,7 +97,7 @@ module.exports = class extends Component
 
                 if(processing === 0)
                 {
-                    this.categoryManager.reinit();
+                    //this.categoryManager.reinit();
                     addLeftoverCats();
                 }
             }

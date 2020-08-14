@@ -278,6 +278,37 @@ h3
     font-style: italic;
 }
 
+.write
+{
+    position: fixed; 
+    bottom: 10px; 
+    left: 10px;
+
+    a
+    {
+        img
+        {
+            width: 64px;
+            height: 64px;
+            padding: 5px;
+        }
+
+        border: none; 
+        cursor: pointer; 
+        background: transparent; 
+        transition: background-color 0.3s;
+        border-radius: 10%;
+        width: 74px;
+        height: 74px;
+        display: block;
+
+        &:hover
+        {
+            background-color: lightgrey;
+        }
+    }
+}
+
 .save // div
 {
     position: fixed; 
