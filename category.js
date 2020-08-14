@@ -170,7 +170,7 @@ module.exports = class
             interval: this.interval,
             showTime: this.showTime,
             mode: this.playlistMode,
-            playlist: this.playlist
+            playlist: this.playlist.name
         }), 
         () => 
         {
