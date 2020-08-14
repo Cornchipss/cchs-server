@@ -57,6 +57,14 @@ module.exports =
                 if(callback) 
                     callback(); 
             });
+    },
+
+    saveAll()
+    {
+        Object.keys(module.exports.playlists).forEach(p =>
+        {
+            module.exports.save(p, module.exports.playlists[p].ids);
+        });
     }
 }
 

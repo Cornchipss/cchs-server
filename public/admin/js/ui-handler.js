@@ -119,15 +119,21 @@ var ui = (() =>
     {
         _finalized: false,
         _appendSongTo: undefined,
+        _selectedCategory: undefined,
+
+        _categories: [],
+        _playlists: {},
 
         addPageUI: (catName) =>
         {
+            ui._selectedCategory = catName;
             document.getElementById('add-page-UI').style.display = 'block';
             document.body.style.overflow = 'hidden';
         },
 
         addPageUIClose: () =>
         {
+            ui._selectedCategory = undefined;
             document.getElementById('add-page-UI').style.display = 'none';
             document.body.style.overflow = 'auto';
         },
@@ -168,6 +174,8 @@ var ui = (() =>
 
         addCategory: (cat, playlists) =>
         {
+            ui._categories.push(cat);
+
             let container = elem('div', 
             [
                 elem('button', '+', null,
@@ -330,8 +338,16 @@ var ui = (() =>
             }
         },
 
-        addSong: (ulElement, n, ytid) =>
+        addSong: (ulElement, n, ytid, ignoreSongInList) =>
         {
+            if(!ignoreSongInList)
+            {
+                let pl = ui._playlists[ulElement.parentNode.parentNode.childNodes[1].innerHTML];
+
+                pl.ids.push(ytid);
+                pl.names.push(n);
+            }
+
             let liElemento = elem('li', n, {style: 'cursor: pointer;', class: 'song', ytid: ytid});
             liElemento.onclick = () =>
             {
@@ -339,6 +355,25 @@ var ui = (() =>
             };
             
             ulElement.insertBefore(liElemento, ulElement.childNodes[ulElement.childNodes.length - 1]);
+        },
+
+        removeSong: (elem) =>
+        {
+            let parent = elem.parentNode;
+            let node = parent.removeChild(elem);
+            let playlist = ui._playlists[parent.parentNode.parentNode.childNodes[1].innerHTML];
+            
+            console.log(playlist);
+            console.log(node);
+
+            for(let i = 0; i < playlist.ids.length; i++)
+            {
+                if(playlist.ids[i] === node.getAttribute('ytid'))
+                {
+                    playlist.ids.splice(i, 1);
+                    playlist.names.splice(i, 1);
+                }
+            }
         },
 
         addSongUI: (list, song) =>
@@ -406,9 +441,83 @@ var ui = (() =>
             }
         },
 
+        updateCategories: () =>
+        {
+            let cats = document.getElementById('categories');
+            // and so the pain starts
+
+            for(let i = 0; i < cats.childNodes.length; i++)
+            {
+                let li = cats.childNodes[i];
+
+                let name = li.childNodes[0].id;
+
+                if(name) // no name means its the button
+                {
+                    ui._categories[i] = ui._categories[i] || {name: name, pages: [], interval: 0, showTime: {}, playlistMode: '', playlist: '', currentPage: 0, nextPageTime: 0}
+
+                    let infoDiv = li.childNodes[0].childNodes[2];
+
+                    // Page interval
+                    ui._categories[i].interval = Number(
+                        infoDiv.childNodes[2].childNodes[0].childNodes[1]
+                            .childNodes[0].childNodes[0].value); // dear God im sorry
+
+                    // Playlist
+                    ui._categories[i].playlist = infoDiv.childNodes[3].childNodes[0].childNodes[1]
+                            .childNodes[0].childNodes[0].value;
+                    ui._categories[i].playlistMode = infoDiv.childNodes[3].childNodes[0].childNodes[1]
+                            .childNodes[1].childNodes[0].value;
+
+                    // Showtimes
+                    for(let j = 0; j <= 7; j++)
+                    {
+                        let index = j !== 0 ? j - 1 : '*';
+
+                        let times = [];
+                        let area = infoDiv.childNodes[4].childNodes[0].childNodes[1].childNodes[j]
+                            .childNodes[0].childNodes[1];
+
+                        area.childNodes.forEach(time =>
+                        {
+                            if(time.childNodes.length === 2)
+                            {
+                                times.push(time.childNodes[0].childNodes[0].value);
+                            }
+                        });
+
+                        ui._categories[i].showTime[index] = times;
+                    }
+
+                    // Pages
+                    let pages = [];
+                    let renamedPages = [];
+
+                    infoDiv.childNodes[1].childNodes.forEach(li =>
+                    {
+                        let node = li.childNodes[0];
+
+                        if(node.value)
+                        {
+                            pages.push(node.value);
+
+                            if(node.value !== node.getAttribute('oldName'))
+                            {
+                                renamedPages.push(
+                                    {new: node.value, old: node.getAttribute('oldName')});
+                            }
+                        }
+                    });
+
+                    ui._categories[i].pages = pages;
+                    ui._categories[i].renamedPages = renamedPages;
+                }
+            };
+        },
+
         addPage: (cat, page) =>
         {
-            let liElem = elem('li', elem('input', undefined, {value: page}, editNameOnly(24)));
+            let liElem = elem('li', elem('input', undefined, {value: page, oldName: page}, editNameOnly(24)));
 
             let parent;
 
@@ -432,6 +541,8 @@ var ui = (() =>
             if(!playlist)
                 return;
 
+            ui._playlists[playlist] = playlists[playlist] || {ids: [], names: []};
+
             let attachTo = document.getElementById('playlists');
 
             if(attachTo.childNodes.length === 0)
@@ -444,7 +555,8 @@ var ui = (() =>
 
             let unorderedList = elem('ul');
 
-            unorderedList.appendChild(elem('li', '+', {class: 'phat-button'}, {
+            unorderedList.appendChild(elem('li', '+', {class: 'phat-button'}, 
+            {
                 onclick: (e) =>
                 {
                     ui.addSongUI(unorderedList);
@@ -454,16 +566,14 @@ var ui = (() =>
             if(playlists[playlist]) // false if this is a newly created playlist
             {
                 let pl = playlists[playlist];
-                console.log(pl);
+                
                 for(let i = 0; i < pl.names.length; i++)
                 {
-                    ui.addSong(unorderedList, pl.names[i], pl.ids[i]);
+                    ui.addSong(unorderedList, pl.names[i], pl.ids[i], true);
                 }
             }
 
-            
-
-            let playlistInfo = elem('ul', unorderedList, {style:'display: none;', class: 'info-div'});
+            let playlistInfo = elem('div', unorderedList, {style:'display: none;', class: 'info-div'});
             attachTo.childNodes[attachTo.childNodes.length - 1].insertAdjacentElement('beforebegin',
                 elem('li', elem('div',
                 [
@@ -484,7 +594,7 @@ var ui = (() =>
                             }
                         }
                     }), 
-                    elem('input', undefined, {value: playlist}, editNameOnly(24)),
+                    elem('span', playlist),
                     playlistInfo
                 ], {style: 'font-size: 2rem;'})));
         },

@@ -10,9 +10,8 @@ document.addEventListener('DOMContentLoaded', () =>
 
     const fileUI = document.getElementById('file');
     const nameUI = document.getElementById('name');
-    const catUI  = document.getElementById('category');
 
-    nameUI.oninput = (ev) =>
+    nameUI.oninput = () =>
     {
         name = nameUI.value;
         if(name.length > 30)
@@ -72,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () =>
         }
         else // remove-vid
         {
-            ui._appendSongTo.parentElement.removeChild(ui._appendSongTo);
+            ui.removeSong(ui._appendSongTo);
             ui.addSongUIClose();
         }
 
@@ -82,10 +81,12 @@ document.addEventListener('DOMContentLoaded', () =>
 
     document.getElementById('add-page-UI').onsubmit = (e) =>
     {
+        e.preventDefault();
+
         let file, name, category;
         file = fileUI.value;
         name = nameUI.value;
-        category = catUI.value;
+        category = ui._selectedCategory;
 
         if(name.length > 24)
         {
@@ -112,13 +113,16 @@ document.addEventListener('DOMContentLoaded', () =>
                 return false;
             }
         }
-        if(!category)
-        {
-            err(catUI, 'No category provided');
-            return false;
-        }
         
         let form = document.getElementById('form');
+
+        console.log(category);
+
+        let tempInput = document.createElement('input');
+        tempInput.name = 'category';
+        tempInput.value = category;
+        form.appendChild(tempInput); // a quick and dirty method of adding the category to the form
+        // This ^^^ is horrible. Please learn from my mistakes.
 
         fetch('/admin/api/page', {
             method: 'POST',
@@ -127,23 +131,18 @@ document.addEventListener('DOMContentLoaded', () =>
         .then(res => res.json())
         .then(res => 
         {
+            form.removeChild(tempInput); // clean up my mistakes
+
             if(res.success)
             {
-                document.getElementById('add-page-UI').style.display = 'none';
-                document.body.style.overflow = 'auto';
+                ui.addPageUIClose();
 
-                let ul = document.getElementById(category + '-ul');
-                let li = document.createElement('li');
-                li.innerHTML = name;
-                li.contentEditable = true;
-                li.classList.add('page');
-                ul.insertBefore(li, ul.childNodes[ul.childNodes.length - 1]);
+                ui.addPage(category, name);
             }
             else
                 alert(res.error);
         });
 
-        e.preventDefault();
         return false;
     }
 });

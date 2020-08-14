@@ -1,4 +1,5 @@
 const fs = require('fs');
+const rimraf = require('rimraf');
 
 const Playlist = require('./playlist');
 
@@ -186,8 +187,22 @@ module.exports = class
     get showTime() { return this._showTime; }
 
     get name() { return this._name; }
+    set name(n)
+    {
+        let oldPath = this.path;
+        this._name = n;
+        fs.renameSync(oldPath, this.path);
+    }
     get page() { return this.pages[this._currentPage]; }
     get pages() { return this._pages; }
+    renamePage(oldName, newName)
+    {
+        fs.renameSync(`${this.path}${oldName}`, `${this.path}${newName}`);
+    }
+    removePage(name)
+    {
+        rimraf(`${this.path}${name}`);
+    }
 
     get playlist() { return this._playlist; }
     set playlist(p) { this._playlist = p; }
