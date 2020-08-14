@@ -3,33 +3,24 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>The Docs!</title>
+        <title>The Docs: Song</title>
 
         <link rel="stylesheet" href="/css/styles.css">
-        <link rel="stylesheet" href="/live/styles.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
     </head>
     <body>
         <div class="markdown-body" id="page">
-            <h1>The Docs!</h1>
+            <h1>The Docs: Song</h1>
             <blockquote>
-            <p>Some documentation to get you on your way</p>
+            <p>Sound Engine</p>
             </blockquote>
-            <h2>The Basics</h2>
-            <ul>
-            <li><a href="/docs/basics">Basic Usage</a></li>
-            </ul>
-            <h2>/api/</h2>
-            <ul>
-            <li><a href="/docs/status">Status</a></li>
-            <li><a href="/docs/bulk">Bulk</a></li>
-            <li><a href="/docs/login">Login</a></li>
-            <li><a href="/docs/register">Register</a></li>
-            <li><a href="/docs/render">Render</a></li>
-            <li><a href="/docs/song">Song</a></li>
-            </ul>
+            <h2>Getting Songs</h2>
+            <p>By making a <b>GET</b> or <b>POST</b> request and specifying the youtube ID of a song, the server will do its best to get you that song.</p>
+            <p>If the server does not have that song on file, it will make it appear out of thin air, though this may take about 10-40 seconds depending on the song's length, leading to some long request times.</p>
+            <p>Usage:</p>
+            <pre><code class="hljs">/api/song?<span class="hljs-meta">id</span>=<span class="hljs-meta">dQw4w9WgXcQ</span></code></pre>
         </div>
     </body>
 </html>

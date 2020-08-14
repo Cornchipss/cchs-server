@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>The Docs: Render</title>
+
+        <link rel="stylesheet" href="/css/styles.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
+    </head>
+    <body>
+        <div class="markdown-body" id="page">
+            <h1>The Docs: Render</h1>
+            <blockquote>
+            <p>2D Rendering Engine</p>
+            </blockquote>
+            <h2>Rendering MarkDown Files</h2>
+            <p>By making a <b>GET</b> request and specifying the category and page to render, you will get the rendered out HTML version of the markdown file.</p>
+            <p>Usage:</p>
+            <pre><code class="hljs">/api/render?<span class="hljs-meta">page</span>=<span class="hljs-meta">page</span>-name<span class="hljs-variable">&amp;category</span>=category-name</code></pre>
+            <h2>Rendering MarkDown Text</h2>
+            <p>Make a <b>POST</b> request to the same location, and put the text you want to render in the body under the "src" tag.</p>            
+        </div>
+    </body>
+</html>

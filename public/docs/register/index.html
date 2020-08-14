@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>The Docs: Login</title>
+
+        <link rel="stylesheet" href="/css/styles.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
+    </head>
+    <body>
+        <div class="markdown-body" id="page">
+            <h1>The Docs: Register</h1>
+            <blockquote>
+            <p>Let's get started</p>
+            </blockquote>
+            <h2>How to register</h2>
+            <p>In order to register an account, you must be granted permission by another account holder by having them also enter their credentials</p>
+            <h2>Registering without code</h2>
+            <p>To login just using this site, navigate to <a href="/register">/register</a></p>
+            <h2>Registering with code</h2>
+            <p>In order to register an account, a <b>POST</b> request must be made to /register, with the body containing:</p>
+            <ul>
+                <li>The new account's username, called "username" in the body</li>
+                <li>The new account's password, called "password" in the body</li>
+                <li>The authorizing account's username, called "authUsername" in the body</li>
+                <li>The authorizing account's password, called "authPassword" in the body</li>
+            </ul>
+            <p>If the registration is successful, a token will be given and the account will have been created.  This token functions the same as a login token would.</p>
+            <p>If the attempt is unsuccessful, an error message will be given.</p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Docs: API</title>
+
+        <link rel="stylesheet" href="/css/styles.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
+    </head>
+    <body>
+        <div class="markdown-body" id="page">
+            <h1>The Docs: Status</h1>
+            <h2>Status</h2>
+            <p>The status API is used when you're trying to get a basic overview of what page the server is on, what playlist its playing, and what category the server is displaying (and its settings).&nbsp; The status request will also show you the server's next category time and next page time.</p>
+            <p>The status can be accessed without admin restriction through</p>
+            <pre><code class="hljs"><span class="hljs-regexp">/api/</span>status</code></pre>
+            <p>The data returned will be in JSON format.</p>
+            <p>Example reply (<a href="/api/status" target="_blank">Try Now</a>):</p>
+            <pre><code class="hljs language-json">{
+&nbsp; <span class="hljs-attr">"currentCategory"</span>: {
+&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"name"</span>: <span class="hljs-string">"current-cat-name"</span>,
+&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"pages"</span>: [
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-string">"tada"</span>
+&nbsp;&nbsp;&nbsp; ],
+&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"currentPage"</span>: <span class="hljs-number">0</span>,
+&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"nextPageTime"</span>: <span class="hljs-number">1597384783022</span>,
+&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"playlist"</span>: <span class="hljs-string">"fun-songs"</span>,
+&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"playlistMode"</span>: <span class="hljs-string">"shuffle"</span>,
+&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"showTime"</span>: {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"0"</span>: [],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"1"</span>: [],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"2"</span>: [],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"3"</span>: [],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"4"</span>: [],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"5"</span>: [],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"6"</span>: [],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"*"</span>: [
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-string">"01:30"</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]
+&nbsp;&nbsp;&nbsp; },
+&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"interval"</span>: <span class="hljs-number">30000</span>
+&nbsp; },
+&nbsp; <span class="hljs-attr">"playlist"</span>: {
+&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"name"</span>: <span class="hljs-string">"fun-songs"</span>,
+&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"songs"</span>: {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"ids"</span>: [
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-string">"2MtOpB5LlUA"</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-attr">"names"</span>: [
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="hljs-string">"Song Name #1"</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]
+&nbsp;&nbsp;&nbsp; }
+&nbsp; },
+&nbsp; <span class="hljs-attr">"nextCategoryTime"</span>: <span class="hljs-string">"2020-08-14T19:00:00.000Z"</span>
+}
+            </code></pre>
+        </div>
+    </body>
+</html>

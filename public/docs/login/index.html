@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>The Docs: Login</title>
+
+        <link rel="stylesheet" href="/css/styles.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.3/styles/default.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css">
+    </head>
+    <body>
+        <div class="markdown-body" id="page">
+            <h1>The Docs: Login</h1>
+            <blockquote>
+            <p>Let's get started</p>
+            </blockquote>
+            <h2>Logging in without code</h2>
+            <p>To login just using this site, navigate to <a href="/login">/login</a></p>
+            <h2>Logging in with code</h2>
+            <p>In order to login, a <b>POST</b> request must be made to /login, with the body containing either your username and password (named "username" and "password" in the body), or your token (named "token" in the body).</p>
+            <p>If a request contains both, the username and password will be given priority and the token will be ignored.</p>
+            <p>On a successful login, a new token will be generated and the old one will expire and be considered invalid.</p>
+            <p>This token will act as your credentials while you are using the site, as this will be the only form of identification stored on the client's computer.</p>
+            <p>Do NOT store the password anywhere.  Only tokens and usernames may be stored on a device.</p>
+        </div>
+    </body>
+</html>

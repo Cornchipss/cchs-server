@@ -18,3 +18,13 @@ body
     display: flex;
     flex-direction: column;
 }
+
+#page
+{
+    flex: 1;
+}
+
+.markdown-body
+{
+    margin: 0 10%;
+}
