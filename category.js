@@ -5,10 +5,10 @@ const Playlist = require('./playlist');
 
 module.exports = class
 {
-    constructor(name, callback)
+    constructor(name, playlistManager, callback)
     {
         this._name = name;
-        this.init(name, callback);
+        this.init(name, callback, playlistManager);
     }
 
     /**
@@ -37,7 +37,7 @@ module.exports = class
             this.nextPage();
     }
 
-    init(name, callback)
+    init(name, callback, playlistManager)
     {
         fs.exists(this.path, exists =>
         {
@@ -78,7 +78,7 @@ module.exports = class
                         this.interval = settings.interval;
                         this.resetClock();
 
-                        this._playlist = new Playlist(settings.playlist);
+                        this._playlist = new Playlist(settings.playlist, playlistManager);
                         this._showTime = settings.showTime;
                         
                         this._playlistMode = settings.mode;
@@ -94,7 +94,7 @@ module.exports = class
                     this._currentPage = 0;
                     this._nextPageTime = Date.now() + 30000;
                     
-                    this._playlist = new Playlist('default');
+                    this._playlist = new Playlist('default', playlistManager);
                     this._showTime =
                     [
                         {
@@ -185,6 +185,7 @@ module.exports = class
     get path() { return `${__dirname}/pages/${this.name}/`; }
 
     get showTime() { return this._showTime; }
+    set showTime(s) { this._showTime = s; }
 
     get name() { return this._name; }
     set name(n)
@@ -195,13 +196,42 @@ module.exports = class
     }
     get page() { return this.pages[this._currentPage]; }
     get pages() { return this._pages; }
+    removeMissingPages(pgs)
+    {
+        for(let i = 0; i < this.pages.length; i++)
+        {
+            let found = false;
+
+            for(let j = 0; j < pgs.length; j++)
+            {
+                if(this.pages[j] === pgs[i])
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found)
+            {
+                this.removePage(this.pages[i]);
+            }
+        }
+    }
+
     renamePage(oldName, newName)
     {
         fs.renameSync(`${this.path}${oldName}`, `${this.path}${newName}`);
     }
     removePage(name)
     {
-        rimraf(`${this.path}${name}`);
+        for(let i = 0; i < this.pages.length; i++)
+        {
+            if(this.pages[i] === name)
+            {
+                this.pages.splice(i, 1);
+            }
+        }
+        rimraf(`${this.path}${name}`, () => {});
     }
 
     get playlist() { return this._playlist; }

@@ -29,7 +29,7 @@ function finishLoading()
     document.getElementById('info').style.display = 'flex';
 }
 
-function save()
+function save(callback)
 {
     const data = {};
 
@@ -37,6 +37,8 @@ function save()
 
     data.nameChanges = {};
     data.categories = {};
+
+    ui.updateCategories();
 
     for(let i = 0; i < ui._categories.length; i++)
     {
@@ -67,9 +69,27 @@ function save()
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
-    }).then(res => res.json())
-        .then(res =>
+    }).then(res => 
     {
-        console.log(res);
+        if(res.status === 200)
+        {
+            res.json().then(res =>
+            {
+                if(callback)
+                    callback(res);
+                else
+                    alert('Saved!')
+            })
+        }
+        else
+        {
+            if(callback)
+                callback(undefined, res);
+            else
+                alert('Error while saving!');
+
+            console.log(res);
+            res.json().then(res => console.log(res));
+        }
     });
 }

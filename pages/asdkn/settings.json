@@ -1,9 +1,0 @@
-{
-    "interval":30000,
-    "showTime":
-    {
-        "*": [ "13:15" ]
-    },
-    "playlist": "default",
-    "mode": "shuffle"
-}

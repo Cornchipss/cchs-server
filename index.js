@@ -12,6 +12,7 @@ if(DEBUG.IS_DEBUG)
 
 const CategoryManager = require('./category-manager');
 const AccountManager = require('./account-manager');
+const PlaylistManager = require('./playlist-manager');
 
 const commandHandler = require('./command-handler');
 
@@ -41,13 +42,17 @@ app.use(bodyParser.raw());
 
 const port = 8675;
 
-const categoryManager = new CategoryManager();
+const playlistManager = new PlaylistManager();
+const categoryManager = new CategoryManager(playlistManager);
 const accountManager = new AccountManager();
 
 // Keeps the current category up to date - kinda jank i know
 setInterval(() =>
 {
-    categoryManager.updateCategories();
+    if(!categoryManager.pause)
+    {
+        categoryManager.updateCategories();
+    }
 }, 100);
 
 // For the command line interface

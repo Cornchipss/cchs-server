@@ -114,33 +114,34 @@ document.addEventListener('DOMContentLoaded', () =>
             }
         }
         
-        let form = document.getElementById('form');
-
-        console.log(category);
-
-        let tempInput = document.createElement('input');
-        tempInput.name = 'category';
-        tempInput.value = category;
-        form.appendChild(tempInput); // a quick and dirty method of adding the category to the form
-        // This ^^^ is horrible. Please learn from my mistakes.
-
-        fetch('/admin/api/page', {
-            method: 'POST',
-            body: new FormData(form)
-        })
-        .then(res => res.json())
-        .then(res => 
+        save(() =>
         {
-            form.removeChild(tempInput); // clean up my mistakes
+            let form = document.getElementById('form');
 
-            if(res.success)
+            let tempInput = document.createElement('input');
+            tempInput.name = 'category';
+            tempInput.value = category;
+            form.appendChild(tempInput); // a quick and dirty method of adding the category to the form
+            // This ^^^ is horrible. Please learn from my mistakes.
+
+            fetch('/admin/api/page', {
+                method: 'POST',
+                body: new FormData(form)
+            })
+            .then(res => res.json())
+            .then(res => 
             {
-                ui.addPageUIClose();
+                form.removeChild(tempInput); // clean up my mistakes
 
-                ui.addPage(category, name);
-            }
-            else
-                alert(res.error);
+                if(res.success)
+                {
+                    ui.addPageUIClose();
+
+                    ui.addPage(category, name);
+                }
+                else
+                    alert(res.error);
+            });
         });
 
         return false;

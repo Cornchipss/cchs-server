@@ -1,5 +1,5 @@
 const Component = require('./component');
-const PlaylistManager = require('../playlist-manager');
+const Category = require('../category');
 
 module.exports = class extends Component
 {
@@ -17,33 +17,98 @@ module.exports = class extends Component
 
     actionPost(req, res, next)
     {
-        //this.categoryManager.categories = req.categories;
-        this.categoryManager.categories.forEach(cat =>
-        {
-            
-        });
-        /*
-        PlaylistManager.playlists = req.playlists;
-        PlaylistManager.saveAll();
+        this.categoryManager.pause = true;
 
-        if(req.nameChanges)
+        let data = req.body;
+
+        console.log(data.categories[0].showTime);
+
+        let addLeftoverCats = () =>
         {
-            Object.keys(req.nameChanges).forEach(change => 
+            let started = 0;
+            data.categories.forEach(c =>
             {
-                for(let i = 0; i < this.categoryManager.categories.length; i++)
+                started++;
+                let cat = new Category(c.name, this.categoryManager.playlistManager);
+                cat.interval = c.interval;
+                cat.playlist = c.playlist;
+                cat.playlistMode = c.playlistMode;
+                cat.showTime = c.showTime;
+    
+                cat.save(() =>
                 {
-                    if(this.categoryManager.categories[i].name === change)
-                    {
-                        this.categoryManager.categories[i].name = req.nameChanges[change];
-                    }
-                }
+                    started--;
+                    this.categoryManager.addCategory(cat);
+
+                    if(started === 0)
+                        this.categoryManager.pause = false;
+                });
             });
+
+            if(started === 0)
+                this.categoryManager.pause = false;
         }
 
-        this.categoryManager.
-*/
-        console.log(req.body);
-        res.status(200).type('json').send('{"eso": "xd"}');
+        this.categoryManager.categories.forEach(cat =>
+        {
+            let found = false;
+
+            let processing = 0;
+
+            for(let i = 0; i < data.categories.length; i++)
+            {
+                let c = data.categories[i];
+
+                processing++;
+
+                if(c.name === cat.name)
+                {
+                    found = true;
+                    cat.interval = c.interval;
+                    cat.playlist = c.playlist;
+                    cat.playlistMode = c.playlistMode;
+                    cat.showTime = c.showTime;
+                    cat.removeMissingPages(c.pages);
+
+                    if(data.nameChanges && data.nameChanges[cat.name])
+                    {
+                        cat.name = data.nameChanges[cat.name];
+                    }
+
+                    cat.save(() =>
+                    {
+                        processing--;
+
+                        if(processing === 0)
+                        {
+                            this.categoryManager.reinit();
+                            addLeftoverCats();
+                        }
+                    });
+
+                    data.categories.splice(i, 1);
+                    return;
+                }
+            };
+
+            if(!found)
+            {
+                this.categoryManager.removeCategory(cat.name);
+
+                processing--;
+
+                if(processing === 0)
+                {
+                    this.categoryManager.reinit();
+                    addLeftoverCats();
+                }
+            }
+        });
+
+        this.categoryManager.playlistManager.playlists = data.playlists;
+        this.categoryManager.playlistManager.saveAll();
+
+        res.status(200).type('json').send('{"success": "true"}');
     }
 
     action(req, res, next)
@@ -53,7 +118,7 @@ module.exports = class extends Component
             currentCategory: this.categoryManager.currentCategoryIndex,
             nextCategoryTime: this.categoryManager.nextCategoryTime,
             categories: this.categoryManager.categoriesData,
-            playlists: PlaylistManager.playlists
+            playlists: this.categoryManager.playlistManager.playlists
         };
     
         res.status(200).type('json').send(JSON.stringify(payload));

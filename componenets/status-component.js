@@ -1,7 +1,5 @@
 const Component = require('./component');
 
-const PlaylistManager = require('../playlist-manager');
-
 module.exports = class extends Component
 {
     constructor(categoryManager)

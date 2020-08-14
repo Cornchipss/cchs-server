@@ -517,7 +517,14 @@ var ui = (() =>
 
         addPage: (cat, page) =>
         {
-            let liElem = elem('li', elem('input', undefined, {value: page, oldName: page}, editNameOnly(24)));
+            let liElem = elem('li', 
+                [ 
+                    elem('input', undefined, {value: page, oldName: page}, editNameOnly(24)),
+                    elem('button', '-', {class: 'phat-button-2'}, {onclick: () =>
+                    {
+                        liElem.parentNode.removeChild(liElem);
+                    }})
+                ]);
 
             let parent;
 

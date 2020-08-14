@@ -1,12 +1,15 @@
 const fs = require('fs');
 const Category = require('./category');
+const rimraf = require('rimraf');
 
 const CATEGORY_PATH = __dirname + '/pages/';
 
 module.exports = class
 {
-    constructor(callback)
+    constructor(playlistManager, callback)
     {
+        this.pause = true;
+        this.playlistManager = playlistManager;
         this.init(callback);
     }
 
@@ -133,6 +136,17 @@ module.exports = class
         }
     }
 
+    removeCategory(cat)
+    {
+        rimraf(CATEGORY_PATH + cat, () => {});
+    }
+
+    reinit()
+    {
+        this._categories = undefined;
+        this.init();
+    }
+
     get categories() { return this._categories; }
     get categoriesData()
     {
@@ -219,7 +233,7 @@ module.exports = class
 
                         if(stats.isDirectory())
                         {
-                            let cat = new Category(f, () =>
+                            let cat = new Category(f, this.playlistManager, () =>
                             {
                                 this.addCategory(cat);
                                 done++;
@@ -270,6 +284,8 @@ module.exports = class
                                             }
                                         }
                                     }
+
+                                    this.pause = false;
 
                                     if(callback)
                                         callback();

@@ -1,5 +1,4 @@
 const SongHandler = require('./song-handler');
-const PlaylistManager = require('./playlist-manager');
 
 module.exports = class
 {
@@ -7,12 +6,14 @@ module.exports = class
      * A generic list of song names read from a json file that manages the caching of songs.
      * @param {string} name The name of the playlist
      */
-    constructor(name)
+    constructor(name, playlistManager)
     {
         this.name = name;
         this.songs = [];
 
-        this.songs = PlaylistManager.playlists[name];
+        this.playlistManager = playlistManager;
+
+        this.songs = this.playlistManager.playlists[name];
     }
 
     /**
@@ -21,7 +22,7 @@ module.exports = class
      */
     save(callback)
     {
-        PlaylistManager.save(this.name, this.songs, callback);
+        this.playlistManager.save(this.name, this.songs, callback);
     }
 
     /**
