@@ -3,7 +3,7 @@ const path = require('path');
 const songHandler = require('./song-handler');
 const rimraf = require('rimraf');
 
-const FOLDER = './playlists/';
+const FOLDER = path.normalize('./playlists/');
 
 module.exports = class
 {
@@ -26,7 +26,7 @@ module.exports = class
 
             files.forEach(f =>
             {
-                fs.readFile(FOLDER + f, 'utf8', (err, data) =>
+                fs.readFile(path.join(FOLDER, f), 'utf8', (err, data) =>
                 {
                     if(err)
                         throw new Error(err);
@@ -52,7 +52,7 @@ module.exports = class
 
     save(name, songs, callback)
     {
-        fs.writeFile(`${FOLDER}${name}.json`,
+        fs.writeFile(path.join(FOLDER, `${name}.json`),
             JSON.stringify(songs),
             () => 
             { 

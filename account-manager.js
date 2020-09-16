@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const path = require('path');
 
 const DEBUG = require('./DEBUG');
 
@@ -12,11 +13,12 @@ module.exports = class
 {
     constructor(callback)
     {
-        fs.exists('./secret/auth.json', exists =>
+        let pth = path.join('./secret', 'auth.json');
+        fs.exists(pth, exists =>
         {
             if(exists)
             {
-                fs.readFile('./secret/auth.json', (err, res) =>
+                fs.readFile(pth, (err, res) =>
                 {
                     if(err)
                         throw err;
@@ -210,7 +212,7 @@ module.exports = class
                 {
                     if(err) throw err;
 
-                    fs.writeFile('./secret/auth.json', JSON.stringify(this._data), () =>
+                    fs.writeFile(path.join('./secret/', 'auth.json'), JSON.stringify(this._data), () =>
                     {
                         if(callback)
                             callback(this);
@@ -219,7 +221,7 @@ module.exports = class
             }
             else
             {
-                fs.writeFile('./secret/auth.json', JSON.stringify(this._data), () =>
+                fs.writeFile(path.join('./secret/', 'auth.json'), JSON.stringify(this._data), () =>
                 {
                     if(callback)
                         callback(this);

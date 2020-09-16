@@ -36,7 +36,10 @@ document.addEventListener('DOMContentLoaded', () =>
     {
         e.preventDefault();
 
-        if(e.submitter.id === 'find-vid')
+        let findVid = document.getElementById('find-vid').style.display !== 'none';
+        let addVid  = document.getElementById('add-vid').style.display !== 'none';
+
+        if(findVid)
         {
             let val = document.getElementById('youtube-id').value.trim();
             
@@ -64,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () =>
             else
                 alert('Invalid youtube ID format.');
         }
-        else if(e.submitter.id === 'add-vid')
+        else if(addVid)
         {
             ui.addSong(ui._appendSongTo, document.getElementById('song-name').innerHTML, document.getElementById('youtube-id').value);
             ui.addSongUIClose();
