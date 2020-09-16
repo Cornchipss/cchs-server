@@ -40,7 +40,7 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.raw());
 
-const port = 8675;
+const port = 80;
 
 const playlistManager = new PlaylistManager();
 const categoryManager = new CategoryManager(playlistManager);
@@ -110,12 +110,12 @@ app.use('/api', (req, res) =>
 });
 
 // If this wasnt an api call send them the webpage they requested
-app.use('/', express.static(__dirname + '/public', {index: 'index.html'}));
+app.use('/', express.static(path.join(__dirname, 'public'), {index: 'index.html'}));
 
 // Last call if page not found - shows a 404 error
 app.use((req, res, next) =>
 {
-    res.status(404).sendFile(__dirname + '/public/404.html');
+    res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
 app.listen(port, () => 

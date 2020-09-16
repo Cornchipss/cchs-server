@@ -5,6 +5,7 @@ md.use(require('markdown-it-emoji'));
 md.use(require('markdown-it-latex').default);
 md.use(require('markdown-it-highlightjs'));
 
+const path = require('path');
 const fs = require('fs');
 
 module.exports = class extends Component
@@ -49,15 +50,15 @@ module.exports = class extends Component
             }
         }
 
-        let absoluteDir = __dirname.substr(0, __dirname.lastIndexOf('\\'));
-        
+        let absoluteDir = path.join(__dirname, '..');
+
         if(!cat || !page)
         {
-            res.status(404).sendFile(absoluteDir + '/public/404.html');
+            res.status(404).sendFile(path.join(absoluteDir, 'public', '404.html'));
             return;
         }
 
-        let path = `${absoluteDir}/pages/${cat}/${page}/index.md`; 
+        let path = path.join(absoluteDir, 'pages', cat, page, 'index.md'); 
         fs.exists(path, exists =>
         {
             if(exists)
@@ -76,7 +77,7 @@ module.exports = class extends Component
             }
             else
             {
-                res.status(404).sendFile(absoluteDir + '/public/404.html');
+                res.status(404).sendFile(path.join(absoluteDir, 'public', '404.html'));
             }
         });
     }
