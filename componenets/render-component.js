@@ -58,12 +58,12 @@ module.exports = class extends Component
             return;
         }
 
-        let path = path.join(absoluteDir, 'pages', cat, page, 'index.md'); 
-        fs.exists(path, exists =>
+        let pth = path.join(absoluteDir, 'pages', cat, page, 'index.md'); 
+        fs.exists(pth, exists =>
         {
             if(exists)
             {
-                fs.readFile(path, {encoding: 'utf8'}, (err, data) =>
+                fs.readFile(pth, {encoding: 'utf8'}, (err, data) =>
                 {
                     if(err)
                     {
